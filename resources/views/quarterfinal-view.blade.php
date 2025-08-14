@@ -128,11 +128,12 @@
     </div>
 
 
-    <!-- Dynamic Score Boards Grid Layout - 3x2 grid (3 columns, 2 rows) -->
+  
+    <!-- 2x2 Grid Layout for Quarterfinal Games -->
     @php
-        $fieldCount = min($groups->count(), 6); // Maximum 6 groups for 3x2 grid
-        $columns = 3; // 3 columns per row
-        $rows = 2; // Fixed 2 rows for 3x2 grid
+        $gameCount = min($games->count(), 4); // Maximum 4 games for 2x2 grid
+        $columns = 2; // 2 columns per row
+        $rows = 2; // Fixed 2 rows for 2x2 grid
     @endphp
     
     <div class="w-full flex flex-col" style="align-items: center; padding-top: 20px;">
@@ -142,57 +143,51 @@
                     @php
                         $index = $row * $columns + $col;
                     @endphp
-                    @if ($index < $fieldCount)
+                    @if ($index < $gameCount)
                         @php
-                           $group = $groups[$index];
-                           $teams = $group->teams;
+                            $game = $games[$index];
+                            
+                            // Count total quarterfinal games for team1
+                            $team1QuarterfinalCount = \App\Models\Game::where('name', 'quarterfinal')
+                                ->where(function ($query) use ($game) {
+                                    $query->where('team1_id', $game->team1->id)
+                                          ->orWhere('team2_id', $game->team1->id);
+                                })
+                                ->count();
+                            
+                            // Count total quarterfinal games for team2
+                            $team2QuarterfinalCount = \App\Models\Game::where('name', 'quarterfinal')
+                                ->where(function ($query) use ($game) {
+                                    $query->where('team1_id', $game->team2->id)
+                                          ->orWhere('team2_id', $game->team2->id);
+                                })
+                                ->count();
                         @endphp
                         
-                        <div class="score-board relative">
-                            <img id="" src="images/{{ $teams->count() == 5 ? 'group5.png': 'group4.png' }} " style="z-index:10;width:100%; max-width: 500px;" />
-                            <div class="group-name absolute " style="color: white;text-align:center; top: 45px; height:35px; left: 150px; width:210px; z-index: 2;">
-                              <span class=" px-2 py-1 uppercase text-sm font-bold  shadow">
-                                  {{$group->name}}
-                              </span>
+                        <div class="vs relative">
+                            <img src="{{ asset('images/final-seminfinal-quarter.png') }}" >
+                            <div class="team1-name absolute  " style="text-align:center; left: 150px; top: 50px; width:400px;">
+                                <span class="text-white" style="font-size: 32px">Quarter Final {{ $index + 1}}</span>
                             </div>
-                            @php $top =86; $i=0; @endphp
-                            @foreach($teams as $team)
-                                @php $top += 40; @endphp
-                                 <div class="group-name absolute " style="color: white;text-align:left; top: {{ $top }}px; height:35px; left: 80px; width:200px; z-index: 2;">
-                                      <span class=" px-2 py-1 uppercase text-sm font-bold  shadow">
-                                          {{$team->name}}
-                                      </span>
-                                  </div>
-                                  <div class="group-name absolute " style="color: white;text-align:center; top: {{ $top }}px; height:35px; left: 280px; width:40px; z-index: 2;">
-                                      <span class=" px-2 py-1 uppercase text-sm font-bold  shadow">
-                                         {{ $team->qualification_wins + $team->qualification_losses }}
-                                      </span>
-                                  </div>
-                                  <div class="team-win absolute  " style="color: white;text-align:center; top: {{ $top }}px; height:35px; left: 310px; width:40px; z-index: 2;">
-                                      <span class=" px-2 py-1 uppercase text-sm font-bold  shadow">
-                                         {{ $team->qualification_wins }}
-                                      </span>
-                                  </div>
-                                  <div class="team-lose absolute  " style="color: white;text-align:center; top: {{ $top }}px; height:35px; left: 340px; width:40px; z-index: 2;">
-                                      <span class=" px-2 py-1 uppercase text-sm font-bold  shadow">
-                                         {{ $team->qualification_losses }}
-                                      </span>
-                                  </div>
-                                  <div class="team-game absolute " style="color: white;text-align:center; top: {{ $top }}px; height:35px; left: 380px; width:40px; z-index: 2;">
-                                      <span class=" px-2 py-1 uppercase text-sm font-bold  shadow">
-                                         {{ $team->qualification_games }}
-                                      </span>
-                                  </div>
-
-                            @endforeach
+                            <div class="team1-name absolute" style="left: 45px; top: 200px;">
+                                <span class="name-horizontal text-white">{{ $game->team1->name }}</span>
+                            </div>
+                            <div class="team2-name absolute" style="left: 45px; top: 265px;">
+                                <span class="name-horizontal text-white">{{ $game->team2->name }}</span>  
+                            </div>
+                            <div class="team1-total absolute" style="left: 540px; top: 200px;">
+                                <span class="name-horizontal text-white">{{ $team1QuarterfinalCount }}</span>
+                            </div>
+                            <div class="team2-total absolute" style="left: 540px; top: 265px;">
+                                <span class="name-horizontal text-white">{{ $team2QuarterfinalCount }}</span>  
+                            </div>
                         </div>
                     @else
                         <!-- Empty placeholder to maintain grid alignment -->
-                        <div class="score-board relative" style="opacity: 0; pointer-events: none; width: 500px; height: 300px;">
-                            <!-- Invisible placeholder with same dimensions -->
+                        <div class="vs relative" style="opacity: 0; pointer-events: none;">
+                            <img src="{{ asset('images/final-seminfinal-quarter.png') }}" style="visibility: hidden;">
                         </div>
                     @endif
-
                 @endfor
             </div>
         @endfor

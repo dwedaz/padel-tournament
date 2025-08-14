@@ -106,7 +106,7 @@ class WasitController extends Controller
     public function createMatch(Request $request): JsonResponse
     {
         $request->validate([
-            'match_type' => 'required|in:qualification,semifinal,final,Quarter-Final',
+            'match_type' => 'required|in:qualification,semifinal,final,quarterfinal',
             'team1_id' => 'required|exists:teams,id',
             'team2_id' => 'required|exists:teams,id|different:team1_id',
             'field_id' => 'required|exists:fields,id',

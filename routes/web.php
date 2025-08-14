@@ -422,6 +422,39 @@ foreach ($teams as $index => $team) {
     ]);
 })->name('getscore');
 
+Route::get('quarterfinal-view', function () {
+    // Get all teams that have played at least one game
+  
+    // Filter teams to only those that have played in the qualification stage
+    $games = \App\Models\Game::where('name', 'quarterfinal')
+        ->where('status', 'Completed')->take(4)
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+     
+    return view('quarterfinal-view', compact('games'));
+})->name('quarterfinal_view');
+
+Route::get('semifinal-view', function () {
+    // Get all semifinal games
+    $games = \App\Models\Game::where('name', 'semifinal')
+        ->where('status', 'Completed')->take(2)
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    return view('semifinal-view', compact('games'));
+})->name('semifinal_view');
+
+Route::get('final-view', function () {
+    // Get all final games
+    $games = \App\Models\Game::where('name', 'final')
+        ->where('status', 'Completed')->take(1)
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    return view('final-view', compact('games'));
+})->name('final_view');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

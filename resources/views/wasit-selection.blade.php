@@ -21,7 +21,7 @@
                 <select id="match-type" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <option value="">-- Select Match Type --</option>
                     <option value="qualification">Qualification</option>
-                    <option value="Quarter-Final">Quarter-Final</option>
+                    <option value="quarterfinal">Quarter Final</option>
                     <option value="semifinal">Semi Final</option>
                     <option value="final">Final</option>
                 </select>

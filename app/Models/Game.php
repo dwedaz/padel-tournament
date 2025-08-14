@@ -21,6 +21,8 @@ class Game extends Model
         'winner_id',
     ];
 
+    
+
     /**
      * Boot method to handle automatic game_set increment
      */
@@ -153,7 +155,8 @@ class Game extends Model
     {
         return match($this->name) {
             'qualification' => 'Qualification',
-            'semi-final' => 'Semi-Final',
+            'quarterfinal' => 'Quarter Final',
+            'semifinal' => 'Semi Final',
             'final' => 'Final',
             default => ucfirst($this->name)
         };

@@ -38,7 +38,7 @@ class StoreGameRequest extends FormRequest
             ],
             'name' => [
                 'required',
-                'in:qualification,semi-final,final'
+                'in:qualification,quarterfinal,semifinal,final'
             ],
             'set' => [
                 'required',
@@ -87,7 +87,7 @@ class StoreGameRequest extends FormRequest
             'field_id.required' => 'Please select a field.',
             'field_id.exists' => 'Selected field does not exist.',
             'name.required' => 'Game type is required.',
-            'name.in' => 'Game type must be qualification, semi-final, or final.',
+            'name.in' => 'Game type must be qualification, quarterfinal, semifinal, or final.',
             'set.required' => 'Set number is required.',
             'set.integer' => 'Set number must be a number.',
             'set.min' => 'Set number must be at least 1.',

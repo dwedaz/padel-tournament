@@ -13,12 +13,12 @@ return new class extends Migration
     {
         // First, update existing data to match enum values
         \DB::table('games')->where('name', 'Qualification')->update(['name' => 'qualification']);
-        \DB::table('games')->where('name', 'Semi-Final')->update(['name' => 'semi-final']);
+        \DB::table('games')->where('name', 'Semi Final')->update(['name' => 'semifinal']);
         \DB::table('games')->where('name', 'Final')->update(['name' => 'final']);
         
         Schema::table('games', function (Blueprint $table) {
             // Change the name field to enum
-            $table->enum('name', ['qualification', 'semi-final', 'final'])->change();
+            $table->enum('name', ['qualification', 'quarterfinal', 'semifinal', 'final'])->change();
         });
     }
 

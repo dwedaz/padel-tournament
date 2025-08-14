@@ -72,7 +72,8 @@
                                     required>
                                 <option value="">Select Game Type</option>
                                 <option value="qualification" {{ old('name') === 'qualification' ? 'selected' : '' }}>Qualification</option>
-                                <option value="semi-final" {{ old('name') === 'semi-final' ? 'selected' : '' }}>Semi-Final</option>
+                                <option value="quarterfinal" {{ old('name') === 'quarterfinal' ? 'selected' : '' }}>Quarter Final</option>
+                                <option value="semifinal" {{ old('name') === 'semifinal' ? 'selected' : '' }}>Semi Final</option>
                                 <option value="final" {{ old('name') === 'final' ? 'selected' : '' }}>Final</option>
                             </select>
                             @error('name')
