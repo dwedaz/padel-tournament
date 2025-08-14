@@ -2,11 +2,7 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <div class="alert alert-info">
-        <strong>Demo Credentials</strong><br>
-        Email: admin@admin.com<br>
-        Password: admin
-    </div>
+  
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
