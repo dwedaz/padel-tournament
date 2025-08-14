@@ -13,10 +13,22 @@ class GroupSeeder extends Seeder
      */
     public function run(): void
     {
-        $groups = ['Group A', 'Group B', 'Group C', 'Group D'];
+        // Standard group names
+        $groups = [
+            'Group A',
+            'Group B',
+            'Group C',
+            'Group D',
+            'Group E',
+            'Group F',
+            'Group G',
+            'Group H'
+        ];
 
         foreach ($groups as $groupName) {
             Group::firstOrCreate(['name' => $groupName]);
         }
+
+        $this->command->info('Groups created: ' . implode(', ', $groups));
     }
 }

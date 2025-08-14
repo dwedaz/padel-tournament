@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use App\Models\Team;
+use App\Models\Field;
 use App\Http\Requests\StoreGameRequest;
 use App\Http\Requests\UpdateGameRequest;
 use Illuminate\Http\RedirectResponse;
@@ -16,11 +17,60 @@ class GameController extends Controller
      */
     public function index(): View
     {
-        $games = Game::with(['team1', 'team2', 'winner'])
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+        $query = Game::with(['team1.group', 'team2.group', 'field']);
         
-        return view('games.index', compact('games'));
+        // Apply filters
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function($q) use ($search) {
+                $q->whereHas('team1', function($subQ) use ($search) {
+                    $subQ->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('team2', function($subQ) use ($search) {
+                    $subQ->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere('name', 'like', "%{$search}%")
+                ->orWhere('game_set', 'like', "%{$search}%")
+                ->orWhere('set', 'like', "%{$search}%");
+            });
+        }
+        
+        if (request('status')) {
+            $query->where('status', request('status'));
+        }
+        
+        if (request('match_type')) {
+            $query->where('name', request('match_type'));
+        }
+        
+        if (request('field_id')) {
+            $query->where('field_id', request('field_id'));
+        }
+        
+        if (request('team_id')) {
+            $teamId = request('team_id');
+            $query->where(function($q) use ($teamId) {
+                $q->where('team1_id', $teamId)
+                  ->orWhere('team2_id', $teamId);
+            });
+        }
+        
+        // Apply sorting
+        $sortBy = request('sort_by', 'created_at');
+        $sortOrder = request('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+        
+        // Paginate results
+        $perPage = request('per_page', 15);
+        $games = $query->paginate($perPage)->appends(request()->query());
+        
+        // Get filter options
+        $teams = Team::with('group')->orderBy('name')->get();
+        $fields = Field::orderBy('name')->get();
+        $statuses = Game::distinct()->pluck('status')->filter()->sort();
+        $matchTypes = Game::distinct()->pluck('name')->filter()->sort();
+        
+        return view('games.index', compact('games', 'teams', 'fields', 'statuses', 'matchTypes'));
     }
 
     /**
@@ -29,7 +79,8 @@ class GameController extends Controller
     public function create(): View
     {
         $teams = Team::with('group')->orderBy('name')->get();
-        return view('games.create', compact('teams'));
+        $fields = Field::orderBy('name')->get();
+        return view('games.create', compact('teams', 'fields'));
     }
 
     /**
@@ -51,7 +102,7 @@ class GameController extends Controller
      */
     public function show(Game $game): View
     {
-        $game->load(['team1.group', 'team2.group', 'winner']);
+        $game->load(['team1.group', 'team2.group', 'field']);
         
         // Get other games between the same teams
         $otherGames = Game::where(function ($query) use ($game) {
@@ -76,7 +127,8 @@ class GameController extends Controller
     public function edit(Game $game): View
     {
         $teams = Team::with('group')->orderBy('name')->get();
-        return view('games.edit', compact('game', 'teams'));
+        $fields = Field::orderBy('name')->get();
+        return view('games.edit', compact('game', 'teams', 'fields'));
     }
 
     /**

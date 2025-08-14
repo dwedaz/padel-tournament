@@ -79,8 +79,12 @@
                                 </div>
                                 @php
                                     $allTeamGames = $team->homeGames->merge($team->awayGames);
-                                    $wins = $allTeamGames->where('winner_id', $team->id)->count();
-                                    $losses = $allTeamGames->where('winner_id', '!=', $team->id)->whereNotNull('winner_id')->count();
+                                    $wins = $allTeamGames->filter(function($game) use ($team) {
+                                        return $game->winner_id == $team->id;
+                                    })->count();
+                                    $losses = $allTeamGames->filter(function($game) use ($team) {
+                                        return $game->winner_id && $game->winner_id != $team->id;
+                                    })->count();
                                 @endphp
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Wins</label>
@@ -98,19 +102,19 @@
                         </div>
                     </div>
 
-                    <!-- Recent Games -->
+                    <!-- Recent Matches -->
                     <div class="mt-8">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-medium">Recent Games</h4>
-                            @if($paginatedGames->total() > 0)
+                            <h4 class="text-lg font-medium">Recent Matches</h4>
+                            @if($paginatedMatches->total() > 0)
                                 <p class="text-sm text-gray-600">
-                                    Showing {{ $paginatedGames->firstItem() }}-{{ $paginatedGames->lastItem() }} 
-                                    of {{ $paginatedGames->total() }} games
+                                    Showing {{ $paginatedMatches->firstItem() }}-{{ $paginatedMatches->lastItem() }} 
+                                    of {{ $paginatedMatches->total() }} matches
                                 </p>
                             @endif
                         </div>
                         
-                        @if($paginatedGames->count() > 0)
+                        @if($paginatedMatches->count() > 0)
                             <div class="overflow-x-auto">
                                 <table class="min-w-full bg-white">
                                     <thead class="bg-gray-50">
@@ -122,10 +126,13 @@
                                                 Opponent
                                             </th>
                                             <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                                                Score
+                                                Set
                                             </th>
                                             <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
-                                                Set
+                                                Match Score
+                                            </th>
+                                            <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                                                Games Played
                                             </th>
                                             <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
                                                 Result
@@ -136,51 +143,47 @@
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
-                                        @foreach($paginatedGames as $game)
+                                        @foreach($paginatedMatches as $match)
                                             <tr>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    {{ $game->formatted_name }}
-                                                    @if($game->status)
-                                                        <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                            {{ $game->status }}
-                                                        </span>
-                                                    @endif
+                                                    {{ $match['match_type'] }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    @if($game->team1_id == $team->id)
-                                                        vs {{ $game->team2->name }}
-                                                    @else
-                                                        vs {{ $game->team1->name }}
-                                                    @endif
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    @if($game->team1_id == $team->id)
-                                                        {{ $game->team1_score }} - {{ $game->team2_score }}
-                                                    @else
-                                                        {{ $game->team2_score }} - {{ $game->team1_score }}
-                                                    @endif
+                                                    <div>
+                                                        <div class="font-medium">vs {{ $match['opponent_name'] }}</div>
+                                                        <div class="text-xs text-gray-500">{{ $match['opponent_group'] }}</div>
+                                                    </div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                        M{{ $game->game_set }}-S{{ $game->set }}
+                                                        Set {{ $match['set'] }}
                                                     </span>
                                                 </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    <div class="flex items-center space-x-2">
+                                                        <span class="font-semibold text-lg">{{ $match['team_wins'] }}</span>
+                                                        <span class="text-gray-400">-</span>
+                                                        <span class="font-semibold text-lg">{{ $match['opponent_wins'] }}</span>
+                                                        @if($match['match_winner'] === 'ongoing')
+                                                            <span class="text-xs text-yellow-600 ml-1">(Best of 7)</span>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    {{ count($match['games']) }} games
+                                                </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                    @php
-                                                        if ($game->winner_id == $team->id) {
-                                                            $result = 'Win';
-                                                            $resultClass = 'bg-green-100 text-green-800';
-                                                        } else {
-                                                            $result = 'Lose';
-                                                            $resultClass = 'bg-red-100 text-red-800';
-                                                        }
-                                                    @endphp
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $resultClass }}">
-                                                        {{ $result }}
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $match['result_class'] }}">
+                                                        {{ $match['result_text'] }}
+                                                        @if($match['match_winner'] === 'team')
+                                                            {{ $match['team_wins'] }}-{{ $match['opponent_wins'] }}
+                                                        @elseif($match['match_winner'] === 'opponent')
+                                                            {{ $match['team_wins'] }}-{{ $match['opponent_wins'] }}
+                                                        @endif
                                                     </span>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {{ $game->created_at->format('d M Y H:i') }}
+                                                    {{ $match['latest_date']->format('d M Y') }}
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -189,13 +192,13 @@
                             </div>
                             
                             <!-- Pagination -->
-                            @if($paginatedGames->hasPages())
+                            @if($paginatedMatches->hasPages())
                                 <div class="mt-4">
-                                    {{ $paginatedGames->links() }}
+                                    {{ $paginatedMatches->links() }}
                                 </div>
                             @endif
                         @else
-                            <p class="text-gray-500">No games played yet.</p>
+                            <p class="text-gray-500">No matches played yet.</p>
                         @endif
                     </div>
 

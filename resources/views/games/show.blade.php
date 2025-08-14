@@ -13,7 +13,7 @@
                     <div class="flex justify-between items-start mb-6">
                         <div>
                             <h3 class="text-2xl font-bold text-gray-900">{{ $game->formatted_name }}</h3>
-                            <p class="text-gray-600 mt-1">Match {{ $game->game_set }} - Set {{ $game->set }}</p>
+                            <p class="text-gray-600 mt-1">Set {{ $game->set }} - Match {{ $game->game_set }}</p>
                             <p class="text-sm text-gray-500 mt-1">{{ $game->created_at->format('F d, Y \a\t H:i') }}</p>
                         </div>
                         <div class="space-x-2">
@@ -41,7 +41,7 @@
                                         </span>
                                     </div>
                                 @endif
-                                @if($game->winner_id == $game->team1->id)
+                                @if($game->winner_id === $game->team1_id)
                                     <div class="mt-2">
                                         <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
                                             Winner
@@ -65,7 +65,7 @@
                                         </span>
                                     </div>
                                 @endif
-                                @if($game->winner_id == $game->team2->id)
+                                @if($game->winner_id === $game->team2_id)
                                     <div class="mt-2">
                                         <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
                                             Winner
@@ -124,6 +124,21 @@
                             <p class="mt-1 text-sm text-gray-900">{{ $game->created_at->format('M d, Y H:i') }}</p>
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-gray-700">Field</label>
+                            <p class="mt-1 text-sm text-gray-900">
+                                @if($game->field)
+                                    <span class="inline-flex items-center">
+                                        <span class="flex-shrink-0 h-6 w-6 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-xs mr-2">
+                                            {{ strtoupper(substr($game->field->name, 0, 1)) }}
+                                        </span>
+                                        {{ $game->field->name }}
+                                    </span>
+                                @else
+                                    <span class="text-gray-400">No field assigned</span>
+                                @endif
+                            </p>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700">Last Updated</label>
                             <p class="mt-1 text-sm text-gray-900">{{ $game->updated_at->format('M d, Y H:i') }}</p>
                         </div>
@@ -162,7 +177,7 @@
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                M{{ $otherGame->game_set }}-S{{ $otherGame->set }}
+                                                S{{ $otherGame->set }}-M{{ $otherGame->game_set }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

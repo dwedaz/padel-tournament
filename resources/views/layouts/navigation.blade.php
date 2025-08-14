@@ -21,8 +21,14 @@
                     <x-nav-link :href="route('teams.index')" :active="request()->routeIs('teams.*')">
                         {{ __('Teams') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('fields.index')" :active="request()->routeIs('fields.*')">
+                        {{ __('Fields') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('games.index')" :active="request()->routeIs('games.*')">
                         {{ __('Games') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('wasit')" :active="request()->routeIs('wasit')">
+                        {{ __('Wasit') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -46,8 +52,27 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
+                        
+                        <!-- Database Operations -->
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <div class="px-4 py-2 text-xs text-gray-500 uppercase tracking-wider font-semibold">
+                            Database Operations
+                        </div>
+                        
+                        <x-dropdown-link :href="route('database.confirm', ['action' => 'clear-matches'])" class="text-orange-600 hover:text-orange-800">
+                            🎯 {{ __('Clear Matches Only') }}
+                        </x-dropdown-link>
+                        
+                        <x-dropdown-link :href="route('database.confirm', ['action' => 'reset'])" class="text-red-600 hover:text-red-800">
+                            🗑️ {{ __('Reset Database') }}
+                        </x-dropdown-link>
+                        
+                        <x-dropdown-link :href="route('database.confirm', ['action' => 'reseed'])" class="text-blue-600 hover:text-blue-800">
+                            🔄 {{ __('Reseed Database') }}
+                        </x-dropdown-link>
 
                         <!-- Authentication -->
+                        <div class="border-t border-gray-100 my-1"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
@@ -85,8 +110,14 @@
             <x-responsive-nav-link :href="route('teams.index')" :active="request()->routeIs('teams.*')">
                 {{ __('Teams') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('fields.index')" :active="request()->routeIs('fields.*')">
+                {{ __('Fields') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('games.index')" :active="request()->routeIs('games.*')">
                 {{ __('Games') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('wasit')" :active="request()->routeIs('wasit')">
+                {{ __('Wasit') }}
             </x-responsive-nav-link>
         </div>
 
@@ -101,8 +132,26 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+                
+                <!-- Database Operations -->
+                <div class="px-4 py-2 text-xs text-gray-500 uppercase tracking-wider font-semibold border-t border-gray-200 mt-3">
+                    Database Operations
+                </div>
+                
+                <x-responsive-nav-link :href="route('database.confirm', ['action' => 'clear-matches'])" class="text-orange-600">
+                    🎯 {{ __('Clear Matches Only') }}
+                </x-responsive-nav-link>
+                
+                <x-responsive-nav-link :href="route('database.confirm', ['action' => 'reset'])" class="text-red-600">
+                    🗑️ {{ __('Reset Database') }}
+                </x-responsive-nav-link>
+                
+                <x-responsive-nav-link :href="route('database.confirm', ['action' => 'reseed'])" class="text-blue-600">
+                    🔄 {{ __('Reseed Database') }}
+                </x-responsive-nav-link>
 
                 <!-- Authentication -->
+                <div class="border-t border-gray-200 mt-3"></div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
 

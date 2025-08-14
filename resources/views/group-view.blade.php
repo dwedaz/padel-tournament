@@ -113,11 +113,22 @@
         position: absolute;
         width: 63px; height: 63px;  display: block; background-image: unset; 
      
-        display: flex; flex-direction: column; justify-content: center; align-items: center; 
+        display: flex; flex-direction: row; justify-content: center; align-items: center; 
         z-index: 2;
         text-align: center; color: #014E82; 
         font-size: 36px; 
         font-weight: bold; 
+      }
+      
+      /* Tie-break beside styling */
+      .tiebreak-small {
+        font-size: 24px !important;
+        font-weight: bold !important;
+        color: #014E82 !important;
+        vertical-align: middle !important;
+        line-height: 1 !important;
+        margin-left: 1px;
+        display: inline !important;
       }
       
   </style>
@@ -126,180 +137,86 @@
     <div id="header" class="w-full h-48 mt-30  flex justify-center items-center">
       <img src="images/logo2-padelore.png" class="h-12 absolute" style="left:200px" />
       <div class="pt-8 justify-center items-center h-20 ">
-        <h1 class="text-4xl font-bold">Round Robin Preliminary Round</h1>
+        <h1 class="text-4xl font-bold uppercase">Round Robin Preliminary Round</h1>
       </div>
       <img src="images/logo2-dvl.png" class="h-32 absolute" style="right:200px" />
     </div>
 
-    <div class="absolute" style="width: 191.517px; height: 47.5987px;  display: block; background-image: unset; top: 361.229px; left: 1139.5px;z-index: 2; font-size: 24px;color: #D76047; text-align: center;">
-      POINT GROUP <span id="group-name"></span>
+    <div class="absolute uppercase" style="width: 191.517px; height: 47.5987px;  display: block; background-image: unset; top: 361.229px; left: 1139.5px;z-index: 2; font-size: 24px;color: #D76047; text-align: center;">
+      POINT {{ $groupName }}
     </div>
 
-    <div id="content" class="flex w-full justify-center mt-20 ">
-        <img id="roundrobin"src="images/roundrobin5.png" style="z-index:1;" />
-        <div id="t-h-1" class="name-horizontal c1 r2" >
-          
+    @if($error)
+        <div class="absolute" style="top: 400px; left: 50%; transform: translateX(-50%); z-index: 10;">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">
+                <strong class="font-bold">Error:</strong>
+                <span class="block sm:inline">{{ $error }}</span>
+            </div>
         </div>
-          <div  id="t-h-2"  class="name-horizontal c1 r3">
-             
-          </div>
-         <div  id="t-h-3"  class="name-horizontal c1 r4">
-          
-         </div>
-          <div  id="t-h-4"  class="name-horizontal c1 r5">
-           
-         </div>
-          <div  id="t-h-5"  class="name-horizontal c1 r6">
-           
-         </div>
-
-         <div id="t-v-1" class="name-vertical r1 c2">
+    @else
+        <div id="content" class="flex w-full justify-center mt-20 ">
+            <img id="roundrobin" src="images/roundrobin{{ $teams->count() }}.png" style="z-index:1;" />
             
-         </div>
+            {{-- Team names horizontal --}}
+            @foreach($teams as $index => $team)
+                @if($index < 5)
+                    <div class="name-horizontal c1 r{{ $index + 2 }}">
+                        {{ $team->name }}
+                    </div>
+                @endif
+            @endforeach
 
-         <div id="t-v-2" class="name-vertical r1 c3">
-           
-         </div>
-           <div id="t-v-3" class="name-vertical r1 c4">
-           
-         </div>
-           <div id="t-v-4" class="name-vertical r1 c5">
-           
-         </div>
-         <div id="t-v-5" class="name-vertical r1 c6">
-           
-         </div>
+            {{-- Team names vertical --}}
+            @foreach($teams as $index => $team)
+                @if($index < 5)
+                    <div class="name-vertical r1 c{{ $index + 2 }}">
+                        {{ $team->name }}
+                    </div>
+                @endif
+            @endforeach
 
-         <div id="score-0-0" class="score r2 c2">
-          
-         </div>
-          <div id="score-0-1" class="score r2 c3">
-          
-         </div>
-          <div id="score-0-2" class="score r2 c4">
-          
-         </div>
-          <div id="score-0-3" class="score r2 c5">
-          
-         </div>
-          <div id="score-0-4" class="score r2 c6">
-          
-         </div>
-          <div id="score-0-5" class="score r2 c7">
-          
-         </div>
-          <div id="score-0-6" class="score r2 c8">
-          
-         </div>
-          <div id="score-0-7" class="score r2 c9">
-          
-         </div>
-         
-
-         <div id="score-1-0" class="score r3 c2">
-          
-         </div>
-          <div id="score-1-1" class="score r3 c3">
-          
-         </div>
-          <div id="score-1-2" class="score r3 c4">
-          
-         </div>
-          <div id="score-1-3" class="score r3 c5">
-          
-         </div>
-          <div id="score-1-4" class="score r3 c6">
-          
-         </div>
-          <div id="score-1-5" class="score r3 c7">
-          
-         </div>
-          <div id="score-1-6" class="score r3 c8">
-          
-         </div>
-          <div id="score-1-7" class="score r3 c9">
-          
-         </div>
-
-        
-
-          <div id="score-2-0" class="score r4 c2">
-          
-         </div>
-          <div id="score-2-1" class="score r4 c3">
-          
-         </div>
-          <div id="score-2-2"  class="score r4 c4">
-          
-         </div>
-          <div id="score-2-3" class="score r4 c5">
-          
-         </div>
-          <div id="score-2-4" class="score r4 c6">
-          
-         </div>
-          <div id="score-2-5" class="score r4 c7">
-          
-         </div>
-          <div id="score-2-6" class="score r4 c8">
-          
-         </div>
-          <div id="score-2-7" class="score r4 c9">
-          
-         </div>
-
-
-
-          <div id="score-3-0" class="score r5 c2">
-          
-         </div>
-          <div id="score-3-1" class="score r5 c3">
-          
-         </div>
-          <div id="score-3-2" class="score r5 c4">
-          
-         </div>
-          <div id="score-3-3" class="score r5 c5">
-          
-         </div>
-          <div id="score-3-4"  class="score r5 c6">
-          
-         </div>
-          <div id="score-3-5"  class="score r5 c7">
-          
-         </div>
-          <div id="score-3-6"  class="score r5 c8">
-          
-         </div>
-          <div id="score-3-7"  class="score r5 c9">
-          
-         </div>
-
-          <div id="score-4-0"  class="score r6 c2">
-          
-         </div>
-          <div id="score-4-1" class="score r6 c3">
-          
-         </div>
-          <div id="score-4-2" class="score r6 c4">
-          
-         </div>
-          <div id="score-4-3" class="score r6 c5">
-          
-         </div>
-          <div id="score-4-4" class="score r6 c6">
-          
-         </div>
-          <div id="score-4-5" class="score r6 c7">
-          
-         </div>
-          <div id="score-4-6" class="score r6 c8">
-          
-         </div>
-          <div id="score-4-7" class="score r6 c9">
-          
-         </div>
-    </div>
+            {{-- Score matrix including Win/Lose/Total columns --}}
+            @foreach($teams as $i => $team1)
+                @if($i < 5)
+                    {{-- Team vs Team scores --}}
+                    @foreach($teams as $j => $team2)
+                        <div class="score r{{ $i + 2 }} c{{ $j + 2 }}">
+                            @php
+                                $scoreValue = $scores[$i][$j] ?? '';
+                                $isTieBreak = strpos($scoreValue, '/') !== false;
+                            @endphp
+                            
+                            @if($isTieBreak)
+                                @php
+                                    $parts = explode('/', $scoreValue);
+                                    $mainScore = $parts[0];
+                                    $tieBreakScore = $parts[1] ?? '0';
+                                @endphp
+                                <span style="font-size: 36px; font-weight: bold;">{{ $mainScore }}</span><span class="tiebreak-small">/{{ $tieBreakScore }}</span>
+                            @else
+                                {{ $scoreValue }}
+                            @endif
+                        </div>
+                    @endforeach
+                    
+                    {{-- Win column --}}
+                    <div class="score r{{ $i + 2 }} c{{ $teams->count() + 3 }}">
+                        {{ $scores[$i][$teams->count()] ?? '0' }}
+                    </div>
+                    
+                    {{-- Lose column --}}
+                    <div class="score r{{ $i + 2 }} c{{ $teams->count() + 4 }}">
+                        {{ $scores[$i][$teams->count() + 1] ?? '0' }}
+                    </div>
+                    
+                    {{-- Total Games column --}}
+                    <div class="score r{{ $i + 2 }} c{{ $teams->count() + 5 }}">
+                        {{ $scores[$i][$teams->count() + 2] ?? '0' }}
+                    </div>
+                @endif
+            @endforeach
+        </div>
+    @endif
 
  
 
@@ -309,54 +226,33 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    // ajax for 500ms to getscore.php update scores using jQuery
-    function updateScores() {
-   
-      var urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('group')) {
-        group = urlParams.get('group');
-        $('#group-name').text(group);
-      } else {
-       alert('No group specified in URL. Please add ?group=GROUP_NAME to the URL.');
-        return;
-      }
-
-      $.getJSON('getscore?group='+group, function(data) {
-    
-      if (data.teams && Array.isArray(data.teams)) {
-        if (data.teams.length == 5) {
-          $('#roundrobin').attr('src', 'images/roundrobin5.png');
+    function updateGroupView() {
+      $.ajax({
+        url: window.location.href,
+        method: 'GET',
+        success: function(response) {
+          // Extract the content data from the response
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(response, 'text/html');
+          const newContent = doc.querySelector('#content');
           
-        }else if (data.teams.length == 4) {
-          $('#roundrobin').attr('src', 'images/roundrobin4.png');
-        }
-        for (let i = 0; i < data.teams.length; i++) {
-        const nameElement = $(`#t-h-${i + 1}`);
-        const nameElement2 = $(`#t-v-${i + 1}`);
-       
-        if (nameElement.length) {
-          nameElement.text(data.teams[i]);
-        }
-        if (nameElement2.length) {
-          nameElement2.text(data.teams[i]);
-        }
-        }
-      }
-      // handle data.scores
-      if (data.scores && Array.isArray(data.scores)) {
-        for (let i = 0; i < data.scores.length; i++) {
-        for (let j = 0; j < data.scores[i].length; j++) {
-          const scoreCell = $(`#score-${i}-${j}`);
-          if (scoreCell.length) {
-          scoreCell.text(data.scores[i][j]);
+          if (newContent) {
+            // Replace the current content container with the updated one
+            const currentContent = document.querySelector('#content');
+            if (currentContent) {
+              currentContent.innerHTML = newContent.innerHTML;
+            }
           }
+        },
+        error: function(xhr, status, error) {
+          console.log('Error updating group view:', error);
         }
-        }
-      }
       });
     }
-    setInterval(updateScores, 500);
-    updateScores();
-   
+    
+    // Start auto-refresh every 500ms
+    setInterval(updateGroupView, 500);
+    
+    console.log('Group-view page loaded with AJAX auto-refresh every 500ms');
   </script>
-</html>%    
+</html>  

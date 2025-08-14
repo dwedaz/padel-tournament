@@ -32,6 +32,10 @@ class UpdateGameRequest extends FormRequest
                 'exists:teams,id',
                 'different:team1_id'
             ],
+            'field_id' => [
+                'required',
+                'exists:fields,id'
+            ],
             'name' => [
                 'required',
                 'in:qualification,semi-final,final'
@@ -61,14 +65,9 @@ class UpdateGameRequest extends FormRequest
                 'min:0',
                 'max:999'
             ],
-            'winner_id' => [
+            'winner' => [
                 'nullable',
-                'exists:teams,id',
-                function ($attribute, $value, $fail) {
-                    if ($value && !in_array($value, [$this->team1_id, $this->team2_id])) {
-                        $fail('The winner must be one of the playing teams.');
-                    }
-                }
+                'in:team1,team2'
             ]
         ];
     }
@@ -85,6 +84,8 @@ class UpdateGameRequest extends FormRequest
             'team2_id.required' => 'Please select Team 2.',
             'team2_id.exists' => 'Selected Team 2 does not exist.',
             'team2_id.different' => 'Team 1 and Team 2 must be different.',
+            'field_id.required' => 'Please select a field.',
+            'field_id.exists' => 'Selected field does not exist.',
             'name.required' => 'Game type is required.',
             'name.in' => 'Game type must be qualification, semi-final, or final.',
             'set.required' => 'Set number is required.',
@@ -98,6 +99,7 @@ class UpdateGameRequest extends FormRequest
             'team2_score.integer' => 'Team 2 score must be a number.',
             'team2_score.min' => 'Team 2 score cannot be negative.',
             'team2_score.max' => 'Team 2 score cannot exceed 999.',
+            'winner.in' => 'Winner must be either Team 1 or Team 2.',
         ];
     }
 }

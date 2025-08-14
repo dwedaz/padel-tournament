@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminUserSeeder::class);
         $this->call(GroupSeeder::class);
         $this->call(TeamSeeder::class);
+        $this->call(FieldSeeder::class);
         $this->call(GameSeeder::class);
     }
 }

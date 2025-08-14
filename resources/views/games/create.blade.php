@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Create New Game') }}
+            {{ __('Create Game - Set ' . request('set') . ' - Match ' . request('game_set')) }}
         </h2>
     </x-slot>
 
@@ -76,6 +76,25 @@
                                 <option value="final" {{ old('name') === 'final' ? 'selected' : '' }}>Final</option>
                             </select>
                             @error('name')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Field -->
+                        <div>
+                            <label for="field_id" class="block text-sm font-medium text-gray-700">Field</label>
+                            <select name="field_id" 
+                                    id="field_id" 
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('field_id') border-red-500 @enderror"
+                                    required>
+                                <option value="">Select Field</option>
+                                @foreach($fields as $field)
+                                    <option value="{{ $field->id }}" {{ old('field_id') == $field->id ? 'selected' : '' }}>
+                                        {{ $field->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('field_id')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
@@ -167,9 +186,18 @@
                                         id="winner_id" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('winner_id') border-red-500 @enderror">
                                     <option value="">Not decided</option>
-                                    <optgroup id="winner-teams" label="Teams">
-                                        <!-- Teams will be populated via JavaScript -->
-                                    </optgroup>
+                                    @php
+                                        $teamsByGroup = $teams->groupBy('group.name');
+                                    @endphp
+                                    @foreach($teamsByGroup as $groupName => $groupTeams)
+                                        <optgroup label="{{ $groupName }}">
+                                            @foreach($groupTeams as $team)
+                                                <option value="{{ $team->id }}" {{ old('winner_id') == $team->id ? 'selected' : '' }}>
+                                                    {{ $team->name }}
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endforeach
                                 </select>
                                 @error('winner_id')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -210,33 +238,4 @@
         </div>
     </div>
 
-    <script>
-        // Update winner dropdown based on selected teams
-        function updateWinnerOptions() {
-            const team1Select = document.getElementById('team1_id');
-            const team2Select = document.getElementById('team2_id');
-            const winnerSelect = document.getElementById('winner_id');
-            const winnerTeams = document.getElementById('winner-teams');
-            
-            // Clear existing options
-            winnerTeams.innerHTML = '';
-            
-            if (team1Select.value && team2Select.value) {
-                const team1Text = team1Select.options[team1Select.selectedIndex].text;
-                const team2Text = team2Select.options[team2Select.selectedIndex].text;
-                
-                // Add teams to winner dropdown
-                winnerTeams.innerHTML = `
-                    <option value="${team1Select.value}">Team 1: ${team1Text}</option>
-                    <option value="${team2Select.value}">Team 2: ${team2Text}</option>
-                `;
-            }
-        }
-        
-        document.getElementById('team1_id').addEventListener('change', updateWinnerOptions);
-        document.getElementById('team2_id').addEventListener('change', updateWinnerOptions);
-        
-        // Initialize on page load
-        updateWinnerOptions();
-    </script>
 </x-app-layout>

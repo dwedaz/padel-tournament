@@ -56,21 +56,79 @@ class TeamController extends Controller
     {
         $team->load(['group']);
         
-        // Get paginated games ordered by datetime (most recent first)
-        $homeGames = $team->homeGames()->with(['team2.group', 'winner'])->get();
-        $awayGames = $team->awayGames()->with(['team1.group', 'winner'])->get();
+        // Get all games with related models
+        $homeGames = $team->homeGames()->with(['team2.group', 'field', 'winnerTeam'])->get();
+        $awayGames = $team->awayGames()->with(['team1.group', 'field', 'winnerTeam'])->get();
         
-        // Merge and sort all games by created_at descending
-        $allGames = $homeGames->merge($awayGames)->sortByDesc('created_at');
+        // Merge all games
+        $allGames = $homeGames->merge($awayGames);
+        
+        // Group games by opponent and set
+        $groupedMatches = [];
+        foreach ($allGames as $game) {
+            $opponentId = $game->team1_id == $team->id ? $game->team2_id : $game->team1_id;
+            $opponentName = $game->team1_id == $team->id ? $game->team2->name : $game->team1->name;
+            $opponentGroup = $game->team1_id == $team->id ? $game->team2->group->name : $game->team1->group->name;
+            $set = $game->set;
+            $key = $opponentId . '_' . $set;
+            
+            if (!isset($groupedMatches[$key])) {
+                $groupedMatches[$key] = [
+                    'opponent_id' => $opponentId,
+                    'opponent_name' => $opponentName,
+                    'opponent_group' => $opponentGroup,
+                    'set' => $set,
+                    'games' => [],
+                    'team_wins' => 0,
+                    'opponent_wins' => 0,
+                    'match_winner' => null,
+                    'match_type' => $game->formatted_name,
+                    'latest_date' => $game->created_at,
+                ];
+            }
+            
+            $groupedMatches[$key]['games'][] = $game;
+            $groupedMatches[$key]['latest_date'] = max($groupedMatches[$key]['latest_date'], $game->created_at);
+            
+            // Count wins for this set
+            if ($game->winner_id == $team->id) {
+                $groupedMatches[$key]['team_wins']++;
+            } elseif ($game->winner_id) {
+                $groupedMatches[$key]['opponent_wins']++;
+            }
+        }
+        
+        // Determine match winners and sort by date
+        foreach ($groupedMatches as &$match) {
+            if ($match['team_wins'] >= 4) {
+                $match['match_winner'] = 'team';
+                $match['result_class'] = 'bg-green-100 text-green-800';
+                $match['result_text'] = 'Won';
+            } elseif ($match['opponent_wins'] >= 4) {
+                $match['match_winner'] = 'opponent';
+                $match['result_class'] = 'bg-red-100 text-red-800';
+                $match['result_text'] = 'Lost';
+            } else {
+                $match['match_winner'] = 'ongoing';
+                $match['result_class'] = 'bg-yellow-100 text-yellow-800';
+                $match['result_text'] = 'Ongoing';
+            }
+        }
+        
+        // Sort by latest date descending
+        uasort($groupedMatches, function($a, $b) {
+            return $b['latest_date'] <=> $a['latest_date'];
+        });
         
         // Convert to paginator
         $currentPage = request()->get('page', 1);
         $perPage = 10;
-        $currentItems = $allGames->forPage($currentPage, $perPage)->values();
+        $matchesCollection = collect(array_values($groupedMatches));
+        $currentItems = $matchesCollection->forPage($currentPage, $perPage);
         
-        $paginatedGames = new \Illuminate\Pagination\LengthAwarePaginator(
+        $paginatedMatches = new \Illuminate\Pagination\LengthAwarePaginator(
             $currentItems,
-            $allGames->count(),
+            $matchesCollection->count(),
             $perPage,
             $currentPage,
             [
@@ -78,9 +136,9 @@ class TeamController extends Controller
                 'pageName' => 'page'
             ]
         );
-        $paginatedGames->appends(request()->query());
+        $paginatedMatches->appends(request()->query());
         
-        return view('teams.show', compact('team', 'paginatedGames'));
+        return view('teams.show', compact('team', 'paginatedMatches'));
     }
 
     /**

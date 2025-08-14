@@ -10,6 +10,7 @@ class Game extends Model
     protected $fillable = [
         'team1_id',
         'team2_id',
+        'field_id',
         'game_set',
         'set',
         'name',
@@ -74,15 +75,45 @@ class Game extends Model
         return $this->belongsTo(Team::class, 'team2_id');
     }
 
-    public function winner(): BelongsTo
+    public function field(): BelongsTo
+    {
+        return $this->belongsTo(Field::class);
+    }
+
+    /**
+     * Get the winning team relationship
+     */
+    public function winnerTeam(): BelongsTo
     {
         return $this->belongsTo(Team::class, 'winner_id');
     }
 
-    // Legacy method for backward compatibility
-    public function winningTeam(): BelongsTo
+    /**
+     * Get the winning team based on winner_id
+     */
+    public function winningTeam(): ?BelongsTo
     {
-        return $this->winner();
+        if ($this->winner_id) {
+            return $this->winnerTeam();
+        }
+        return null;
+    }
+
+    /**
+     * Get the actual winning team model (accessor)
+     */
+    public function getWinnerTeamAttribute(): ?Team
+    {
+        if ($this->winner_id) {
+            return $this->getRelationValue('winnerTeam');
+        }
+        return null;
+    }
+
+    // Legacy method for backward compatibility
+    public function winner(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'winner_id');
     }
 
     /**

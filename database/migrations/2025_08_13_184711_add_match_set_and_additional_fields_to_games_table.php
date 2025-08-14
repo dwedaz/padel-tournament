@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('games', function (Blueprint $table) {
             $table->integer('match_set')->after('team2_id');
-            $table->string('name')->after('match_set'); // qualification, semi-final, final etc
+            $table->string('name')->after('match_set'); //   etc
             $table->string('status')->nullable()->after('name'); // tie break, nullable
             $table->enum('who_is_serving', ['team1', 'team2'])->nullable()->after('status');
             

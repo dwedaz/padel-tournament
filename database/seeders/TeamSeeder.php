@@ -14,47 +14,55 @@ class TeamSeeder extends Seeder
      */
     public function run(): void
     {
-        $firstNames = [
-            'Alex', 'Ben', 'Carl', 'Dan', 'Eva', 'Finn', 'Gina', 'Hope', 
-            'Ian', 'Joy', 'Kate', 'Leo', 'Max', 'Nora', 'Owen', 'Pia', 
-            'Quinn', 'Ray', 'Sam', 'Tara', 'Uma', 'Val', 'Wade', 'Zoe'
+        // Fixed team names - these will always be the same when reseeding
+        $fixedTeamNames = [
+            // Group A teams (4 teams)
+            'Adi', 'Budi', 'Citra', 'Dani',
+            // Group B teams (4 teams)  
+            'Eka', 'Fitri', 'Gita', 'Hani',
+            // Group C teams (4 teams)
+            'Indra', 'Joko', 'Kania', 'Lina',
+            // Group D teams (4 teams)
+            'Maya', 'Nina', 'Oscar', 'Prita',
+            // Group E teams (4 teams)
+            'Qori', 'Rina', 'Sari', 'Tari',
+            // Group F teams (4 teams)
+            'Umi', 'Vera', 'Wati', 'Yuni'
         ];
 
-        $groups = Group::all();
+        $groups = Group::orderBy('name')->get(); // Order by name to ensure consistent assignment
+        $teamNameIndex = 0;
         
         foreach ($groups as $group) {
-            // Create 5 teams per group
-            for ($i = 0; $i < 5; $i++) {
-                // Pick two random different names
-                $name1 = $firstNames[array_rand($firstNames)];
-                do {
-                    $name2 = $firstNames[array_rand($firstNames)];
-                } while ($name1 === $name2);
-                
-                // Create team name in format "Name1 X Name2" with max 10 chars
-                $teamName = $name1 . ' X ' . $name2;
-                
-                // If longer than 10 chars, use shorter names or abbreviate
-                if (strlen($teamName) > 10) {
-                    // Try with 3-char names
-                    $short1 = substr($name1, 0, 3);
-                    $short2 = substr($name2, 0, 3);
-                    $teamName = $short1 . ' X ' . $short2;
-                }
-                
-                // Make sure team name is unique
-                $originalName = $teamName;
-                $counter = 1;
-                while (Team::where('name', $teamName)->exists()) {
-                    $teamName = $originalName . $counter;
-                    if (strlen($teamName) > 10) {
-                        $teamName = substr($originalName, 0, 9) . $counter;
-                    }
-                    $counter++;
+            $teamsCount = 0;
+            
+            // Determine team count based on group
+            switch ($group->name) {
+                case 'Group A':
+                case 'Group B':
+                case 'Group C':
+                case 'Group D':
+                case 'Group E':
+                case 'Group F':
+                    $teamsCount = 4;
+                    break;
+                case 'Group G':
+                case 'Group H':
+                    $teamsCount = 1; // Groups G and H get 1 BYE team each
+                    break;
+            }
+            
+            for ($i = 0; $i < $teamsCount; $i++) {
+                // For Groups G and H, use 'BYE', otherwise use fixed names
+                if (in_array($group->name, ['Group G', 'Group H'])) {
+                    $currentTeamName = 'BYE';
+                } else {
+                    $currentTeamName = $fixedTeamNames[$teamNameIndex];
+                    $teamNameIndex++;
                 }
                 
                 Team::create([
-                    'name' => $teamName,
+                    'name' => $currentTeamName,
                     'group_id' => $group->id
                 ]);
             }
