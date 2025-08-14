@@ -226,6 +226,25 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
+
+    var routes = ['Group A', 'Group B', 'Group C', 'Group D', 'Group E', 'Group F'];
+
+    var group = '{{ $groupName }}';
+
+    setTimeout(function () {
+          // find the current group index
+          var currentIndex = routes.indexOf(group);
+
+          // move to next index, loop back to 0 if at the end
+          var nextIndex = (currentIndex + 1) % routes.length;
+
+          // build redirect URL (adjust as needed)
+          var nextGroup = routes[nextIndex];
+          window.location.href = "?group=" + encodeURIComponent(nextGroup);
+      }, 8000);
+ 
+
+
     function updateGroupView() {
       $.ajax({
         url: window.location.href,

@@ -20,7 +20,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/group-view', function () {
+Route::get('/matrix', function () {
     // Get group from URL parameter
     $groupName = request()->query('group', 'Group A');
     
@@ -28,7 +28,7 @@ Route::get('/group-view', function () {
     $group = \App\Models\Group::where('name', $groupName)->with('teams')->first();
     
     if (!$group || $group->teams->isEmpty()) {
-        return view('matrix', [
+        return view('group-view', [
             'group' => null,
             'teams' => collect(),
             'scores' => [],
