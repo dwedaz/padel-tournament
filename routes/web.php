@@ -428,6 +428,7 @@ Route::get('quarterfinal-view', function () {
     // Filter teams to only those that have played in the qualification stage
     $games = \App\Models\Game::where('name', 'quarterfinal')->take(4)
         ->orderBy('created_at', 'asc')
+         ->groupBy('team1_id', 'team2_id')
         ->get();
 
      
@@ -438,6 +439,7 @@ Route::get('semifinal-view', function () {
     // Get all semifinal games
     $games = \App\Models\Game::where('name', 'semifinal')->take(2)
         ->orderBy('created_at', 'asc')
+         ->groupBy('team1_id', 'team2_id')
         ->get();
 
     return view('semifinal-view', compact('games'));
@@ -447,6 +449,7 @@ Route::get('final-view', function () {
     // Get all final games
     $games = \App\Models\Game::where('name', 'final')->take(1)
         ->orderBy('created_at', 'asc')
+        ->groupBy('team1_id', 'team2_id')
         ->get();
 
     return view('final-view', compact('games'));
