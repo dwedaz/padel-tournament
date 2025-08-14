@@ -6,10 +6,10 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        <img src="{{ asset('images/logo-padelore.png') }}" alt="Logo" class="h-8 w-auto">
                     </a>
                 </div>
-
+        
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
@@ -54,6 +54,7 @@
                         </x-dropdown-link>
                         
                         <!-- Database Operations -->
+                         <!--
                         <div class="border-t border-gray-100 my-1"></div>
                         <div class="px-4 py-2 text-xs text-gray-500 uppercase tracking-wider font-semibold">
                             Database Operations
@@ -70,6 +71,7 @@
                         <x-dropdown-link :href="route('database.confirm', ['action' => 'reseed'])" class="text-blue-600 hover:text-blue-800">
                             🔄 {{ __('Reseed Database') }}
                         </x-dropdown-link>
+                        -->
 
                         <!-- Authentication -->
                         <div class="border-t border-gray-100 my-1"></div>
