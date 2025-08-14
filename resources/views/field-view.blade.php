@@ -195,7 +195,7 @@
                                     @endif
                                 </span>
                             </div>
-                            <div class="team1-bola absolute {{ $latestGame->who_is_serving == 'team1' ? '': 'hidden' }}" style="color: #014E82;text-align:center; top: 0px; height:35px; left: 390px; width:40px; z-index: 2;">
+                            <div class="team1-bola absolute {{ ($latestGame && $latestGame->who_is_serving == 'team1') ? '': 'hidden' }}" style="color: #014E82;text-align:center; top: 0px; height:35px; left: 390px; width:40px; z-index: 2;">
                                 <span class=" px-2 py-1 uppercase text-2xl font-bold  ">
                                    <img src="images/bola.png" />
                                 </span>
@@ -229,7 +229,7 @@
                                     @endif
                                 </span>
                             </div>
-                            <div class="team2-bola absolute {{ $latestGame->who_is_serving == 'team2' ? '': 'hidden' }} " style="color: #014E82;text-align:center; top: 60px; height:35px; left: 390px; width:40px; z-index: 2;">
+                            <div class="team2-bola absolute {{ ($latestGame && $latestGame->who_is_serving == 'team2') ? '': 'hidden' }} " style="color: #014E82;text-align:center; top: 60px; height:35px; left: 390px; width:40px; z-index: 2;">
                                 <span class=" px-2 py-1 uppercase text-2xl font-bold  ">
                                    <img src="images/bola.png" />
                                 </span>
@@ -270,6 +270,16 @@
                                 </span>
                             </div>
                             @endif
+
+                            @if ($latestGame->team1_score == 40 && $latestGame->team2_score == 40)
+                            <div class="team1-tiebreak absolute " style="text-align:center; top: -25px; height:35px; left: 580px; width:320px; z-index: 2;">
+                                <span class="text-white px-2 py-1 uppercase text-lg font-bold text-blue-900 ">
+                                   <img src="images/gp.png" />
+                                </span>
+                            </div>
+                            @endif
+
+
                         </div>
                     @else
                         <!-- Empty placeholder to maintain grid alignment -->

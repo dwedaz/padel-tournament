@@ -45,8 +45,8 @@ class GameSeeder extends Seeder
 
         $this->command->info("\n=== Creating Games for Group A ===" . ' (Teams: ' . $teams->pluck('name')->implode(', ') . ')');
         
-        // Set base date to be before August 14, 2025 (using August 1-10, 2025)
-        $baseDate = Carbon::create(2025, 8, 1)->startOfDay();
+        // Set base date to be in the past (using dates from 30 days ago)
+        $baseDate = Carbon::now()->subDays(30)->startOfDay();
         $servingOptions = ['team1', 'team2', null];
         $totalGames = 0;
         $dayOffset = 0;
@@ -120,7 +120,11 @@ class GameSeeder extends Seeder
                         $team2Wins++;
                     }
                     
+                    // Ensure the game date doesn't exceed today
                     $gameDate = $baseDate->copy()->addDays($dayOffset)->addHours(rand(9, 17))->addMinutes(rand(0, 59));
+                    if ($gameDate->isAfter(Carbon::now())) {
+                        $gameDate = Carbon::now()->subDays(rand(0, 5))->addHours(rand(9, 17))->addMinutes(rand(0, 59));
+                    }
                     $randomField = $fields->random();
                     
                     Game::create([
@@ -168,7 +172,11 @@ class GameSeeder extends Seeder
                         $team2Wins++;
                     }
                     
+                    // Ensure the game date doesn't exceed today
                     $gameDate = $baseDate->copy()->addDays($dayOffset)->addHours(rand(9, 17))->addMinutes(rand(0, 59));
+                    if ($gameDate->isAfter(Carbon::now())) {
+                        $gameDate = Carbon::now()->subDays(rand(0, 5))->addHours(rand(9, 17))->addMinutes(rand(0, 59));
+                    }
                     $randomField = $fields->random();
                     
                     Game::create([
@@ -207,6 +215,6 @@ class GameSeeder extends Seeder
         $this->command->info('- Adi vs Budi: Tie break match (3-3)');
         $this->command->info('- All other matches: Four wins format (4-X)');
         $this->command->info('Total matchups: ' . count($matchups));
-        $this->command->info('All games scheduled before August 14, 2025 (starting from August 1, 2025)');
+        $this->command->info('All games scheduled in the past 30 days from ' . $baseDate->format('M d, Y') . ' onwards');
     }
 }

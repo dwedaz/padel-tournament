@@ -226,25 +226,17 @@ Route::get('/team-view', function () {
 })->name('team.view');
 
 Route::get('/field-view', function () {
-    // Get unique fields by name (to avoid duplicates)
-    $uniqueFieldNames = \App\Models\Field::distinct()->pluck('name');
+    // Get ALL fields and their latest games
+    $fields = \App\Models\Field::orderBy('name')->get();
     
-    $fields = collect();
-    foreach ($uniqueFieldNames as $fieldName) {
-        // Get one field for each unique name
-        $field = \App\Models\Field::where('name', $fieldName)->first();
-        
-        if ($field) {
-            // Get the latest game for this field (prioritize incomplete games, then most recent)
-            $latestGame = \App\Models\Game::where('field_id', $field->id)
-                ->with(['team1', 'team2'])
-                ->orderByRaw("CASE WHEN status != 'Completed' THEN 0 ELSE 1 END")
-                ->orderBy('created_at', 'desc')
-                ->first();
-                
-            $field->latestGame = $latestGame;
-            $fields->push($field);
-        }
+    foreach ($fields as $field) {
+        // Get the latest game for this field (prioritize incomplete games, then most recent)
+        $latestGame = \App\Models\Game::where('field_id', $field->id)
+            ->with(['team1', 'team2'])
+            ->orderBy('created_at', 'desc')
+            ->first();
+            
+        $field->latestGame = $latestGame;
     }
     
     return view('field-view', compact('fields'));
