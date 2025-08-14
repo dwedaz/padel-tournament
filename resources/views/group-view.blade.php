@@ -135,11 +135,7 @@
   <body class=" justify-center ">
     <img src="images/bg1920.png" class="absolute" style="z-index: -1;" />
     <div id="header" class="w-full h-48 mt-30  flex justify-center items-center">
-      <img src="images/logo2-padelore.png" class="h-12 absolute" style="left:200px" />
-      <div class="pt-8 justify-center items-center h-20 ">
-        <h1 class="text-4xl font-bold uppercase">Round Robin Preliminary Round</h1>
-      </div>
-      <img src="images/logo2-dvl.png" class="h-32 absolute" style="right:200px" />
+     
     </div>
 
     <div class="absolute uppercase" style="width: 191.517px; height: 47.5987px;  display: block; background-image: unset; top: 361.229px; left: 1139.5px;z-index: 2; font-size: 24px;color: #D76047; text-align: center;">

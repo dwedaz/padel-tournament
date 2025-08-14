@@ -20,7 +20,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/matrix', function () {
+Route::get('matrix-view', function () {
     // Get group from URL parameter
     $groupName = request()->query('group', 'Group A');
     
@@ -167,7 +167,7 @@ Route::get('/matrix', function () {
     ]);
 })->name('group.view');
 
-Route::get('/group-score', function () {
+Route::get('/group-view', function () {
     // Get first 6 groups with teams for 3x2 grid display
     $groups = \App\Models\Group::with('teams')->limit(6)->get();
     
