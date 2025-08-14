@@ -11,7 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->validateCsrfTokens(except: [
+            'wasit/referee/*/update-serving',
+            'wasit/referee/*/update-score',
+            'wasit/referee/*/update-tiebreak-score',
+            'wasit/referee/*/end-game',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

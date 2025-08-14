@@ -38,7 +38,7 @@ class WasitController extends Controller
      */
     public function getMatches(Request $request): JsonResponse
     {
-        $query = Game::with(['team1.group', 'team2.group']);
+        $query = Game::with(['team1.group', 'team2.group', 'field']);
         
         if ($request->match_type) {
             $query->where('name', $request->match_type);
@@ -65,6 +65,16 @@ class WasitController extends Controller
         
         return response()->json([
             'games' => $games->map(function ($game) {
+                // Get winner name from winner_id if available
+                $winnerName = null;
+                if ($game->winner_id) {
+                    if ($game->winner_id == $game->team1_id) {
+                        $winnerName = $game->team1->name;
+                    } elseif ($game->winner_id == $game->team2_id) {
+                        $winnerName = $game->team2->name;
+                    }
+                }
+                
                 return [
                     'id' => $game->id,
                     'name' => $game->name,
@@ -78,9 +88,10 @@ class WasitController extends Controller
                     'team1_score' => $game->team1_score,
                     'team2_score' => $game->team2_score,
                     'status' => $game->status,
-                    'winner' => $game->winner,
-                    'winner_name' => $game->winner ? 
-                        ($game->winner === 'team1' ? $game->team1->name : $game->team2->name) : null,
+                    'winner_id' => $game->winner_id,
+                    'winner_name' => $winnerName,
+                    'field_id' => $game->field_id,
+                    'field_name' => $game->field ? $game->field->name : 'No Field',
                     'who_is_serving' => $game->who_is_serving,
                     'serving_team_name' => $game->who_is_serving ? 
                         ($game->who_is_serving === 'team1' ? $game->team1->name : $game->team2->name) : null,
@@ -367,6 +378,47 @@ class WasitController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update tie-break score: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete a specific match/game
+     */
+    public function deleteMatch(Game $game): JsonResponse
+    {
+        try {
+            // Check if the game has been completed
+            if ($game->status === 'Completed') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot delete a completed match. Only ongoing matches can be deleted.',
+                ], 400);
+            }
+
+            // Load team names for response
+            $game->load(['team1.group', 'team2.group']);
+            
+            $gameInfo = [
+                'team1_name' => $game->team1->name,
+                'team2_name' => $game->team2->name,
+                'formatted_name' => ucfirst(str_replace('-', ' ', $game->name)),
+                'game_set' => $game->game_set,
+                'set' => $game->set,
+            ];
+
+            // Delete the game
+            $game->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Match deleted successfully!',
+                'deleted_game' => $gameInfo,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete match: ' . $e->getMessage(),
             ], 500);
         }
     }

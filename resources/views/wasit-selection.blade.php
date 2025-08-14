@@ -325,7 +325,7 @@
                 });
             });
             
-            function loadExistingMatches(matchType, team1Id, team2Id) {
+            window.loadExistingMatches = function(matchType, team1Id, team2Id) {
                 const $matchesList = $('#matches-list');
                 $matchesList.html('<div class="text-center py-4 text-gray-500">Loading...</div>');
                 
@@ -347,6 +347,7 @@
                         response.games.forEach(function(game) {
                             const winnerText = game.winner_name ? `Winner: ${game.winner_name}` : 'Ongoing';
                             const servingText = game.serving_team_name ? `Serving: ${game.serving_team_name}` : '';
+                            const fieldText = game.field_name ? `Field: ${game.field_name}` : 'Field: No Field';
                             
                             html += `
                                 <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
@@ -356,18 +357,27 @@
                                                 ${game.team1_name} vs ${game.team2_name}
                                             </div>
                                             <div class="text-sm text-gray-600 mt-1">
-                                                ${game.formatted_name} • Game Set ${game.game_set} • Set ${game.set}
+                                                ${game.formatted_name} • Game Set ${game.game_set} • Set ${game.set} • ${fieldText}
                                             </div>
                                             <div class="text-sm text-gray-600">
                                                 Score: ${game.team1_score} - ${game.team2_score} • ${winnerText}
                                             </div>
                                             ${servingText ? `<div class="text-xs text-gray-500 mt-1">${servingText}</div>` : ''}
                                         </div>
-                                        <div class="ml-4">
+                                        <div class="ml-4 flex space-x-2">
                                             <a href="/wasit/referee/${game.id}" 
                                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                                 Start Referee
                                             </a>
+                                            <button onclick="deleteMatch(${game.id}, '${game.team1_name}', '${game.team2_name}', '${game.formatted_name}')" 
+                                                    class="px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                        game.winner_name ? 
+                                                        'bg-gray-400 text-gray-600 cursor-not-allowed' : 
+                                                        'bg-red-500 hover:bg-red-600 text-white'
+                                                    }"
+                                                    ${game.winner_name ? 'disabled' : ''}>
+                                                Delete Match
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -616,6 +626,67 @@
             console.log('Wasit game selection page initialized');
             console.log(`Total games available: {{ $games->count() }}`);
         });
+        
+        // Global function to delete a match
+        function deleteMatch(gameId, team1Name, team2Name, matchType) {
+            const message = `Are you sure you want to delete this match?\n\n` +
+                          `${team1Name} vs ${team2Name}\n` +
+                          `Type: ${matchType}\n\n` +
+                          `This action cannot be undone.`;
+                          
+            if (!confirm(message)) {
+                return;
+            }
+            
+            // Disable the delete button to prevent double-clicks
+            const deleteBtn = event.target;
+            const originalText = deleteBtn.textContent;
+            deleteBtn.disabled = true;
+            deleteBtn.textContent = 'Deleting...';
+            
+            // Make AJAX call to delete the match
+            $.ajax({
+                url: `/wasit/delete-match/${gameId}`,
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(`Match deleted successfully!\n\n${response.deleted_game.team1_name} vs ${response.deleted_game.team2_name}`);
+                        
+                        // Refresh the matches list if it's currently visible
+                        if (!$('#existing-matches').hasClass('hidden')) {
+                            const matchType = $('#match-type').val();
+                            const team1Id = $('#team1').val();
+                            const team2Id = $('#team2').val();
+                            
+                            if (matchType && team1Id && team2Id) {
+                                loadExistingMatches(matchType, team1Id, team2Id);
+                            }
+                        }
+                    } else {
+                        alert('Error: ' + response.message);
+                        // Re-enable the button if there was an error
+                        deleteBtn.disabled = false;
+                        deleteBtn.textContent = originalText;
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = 'Error deleting match.';
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    
+                    alert(errorMessage);
+                    
+                    // Re-enable the button if there was an error
+                    deleteBtn.disabled = false;
+                    deleteBtn.textContent = originalText;
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -106,15 +106,7 @@
                 </a>
             </div>
             
-            <!-- Tab Navigation -->
-            <div class="border-b border-gray-200 mb-6">
-                <nav class="flex space-x-8">
-                    <button class="tab-button active" data-tab="general">General</button>
-                    <button class="tab-button" data-tab="set">Set</button>
-                    <button class="tab-button" data-tab="games">Games</button>
-                    <button class="tab-button" data-tab="tie-break">Tie-Break</button>
-                </nav>
-            </div>
+           
 
             <!-- Tab Content -->
             <div id="general-tab" class="tab-content">
@@ -249,7 +241,6 @@
                     <form id="game-form" style="display: none;">
                         <input type="hidden" id="winner_id" name="winner_id" value="{{ $game->winner_id ?? '' }}">
                         <input type="hidden" id="manual_winner" name="manual_winner" value="">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     </form>
                     
                     <div class="w-full">
@@ -270,96 +261,7 @@
                 </div>
             </div>
 
-            <div id="set-tab" class="tab-content hidden">
-                <div class="text-center py-12">
-                    <h2 class="text-2xl font-bold text-gray-700 mb-4">Set Controls</h2>
-                    <p class="text-gray-500">Set management controls will be available here.</p>
-                </div>
-            </div>
-
-            <div id="games-tab" class="tab-content hidden">
-                <div class="text-center py-12">
-                    <h2 class="text-2xl font-bold text-gray-700 mb-4">Games Controls</h2>
-                    <p class="text-gray-500">Game management controls will be available here.</p>
-                </div>
-            </div>
-
-            <div id="tie-break-tab" class="tab-content hidden">
-                @if($isTieBreak)
-                    <!-- TIE-BREAK ACTIVE -->
-                    <div class="text-center mb-8">
-                        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6">
-                            <h2 class="text-xl font-bold mb-2">🏆 TIE-BREAK ACTIVE</h2>
-                            <p class="text-sm">Match score is 3-3. This 7th game uses regular scoring (0, 1, 2, 3, etc.)</p>
-                        </div>
-                        
-                        <!-- Current Tie-Break Scores -->
-                        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Tie-Break Score</h3>
-                            <div class="grid grid-cols-2 gap-8">
-                                <div class="text-center">
-                                    <h4 class="font-bold text-gray-600 mb-2">{{ $game->team1->name }}</h4>
-                                    <div class="text-4xl font-bold text-blue-600" id="team1-tiebreak-score">
-                                        {{ $game->team1_score }}
-                                    </div>
-                                </div>
-                                <div class="text-center">
-                                    <h4 class="font-bold text-gray-600 mb-2">{{ $game->team2->name }}</h4>
-                                    <div class="text-4xl font-bold text-blue-600" id="team2-tiebreak-score">
-                                        {{ $game->team2_score }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Tie-Break Score Controls -->
-                        <div class="grid grid-cols-2 gap-6">
-                            <!-- Team 1 Controls -->
-                            <div class="bg-white rounded-lg shadow-lg p-4">
-                                <h4 class="font-semibold text-gray-700 mb-4 text-center">{{ $game->team1->name }}</h4>
-                                <div class="flex justify-center space-x-2">
-                                    <button class="tiebreak-btn bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg" 
-                                            data-team="team1" data-action="decrement">
-                                        -1
-                                    </button>
-                                    <button class="tiebreak-btn bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg" 
-                                            data-team="team1" data-action="increment">
-                                        +1
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Team 2 Controls -->
-                            <div class="bg-white rounded-lg shadow-lg p-4">
-                                <h4 class="font-semibold text-gray-700 mb-4 text-center">{{ $game->team2->name }}</h4>
-                                <div class="flex justify-center space-x-2">
-                                    <button class="tiebreak-btn bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg" 
-                                            data-team="team2" data-action="decrement">
-                                        -1
-                                    </button>
-                                    <button class="tiebreak-btn bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg" 
-                                            data-team="team2" data-action="increment">
-                                        +1
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6 text-sm text-gray-600">
-                            <p>💡 <strong>Tip:</strong> Tie-break scoring uses regular numbers. First to 7 points (with 2-point margin) wins.</p>
-                        </div>
-                    </div>
-                @else
-                    <!-- NO TIE-BREAK -->
-                    <div class="text-center py-12">
-                        <div class="bg-gray-100 rounded-lg p-6">
-                            <h2 class="text-2xl font-bold text-gray-700 mb-4">No Tie-Break</h2>
-                            <p class="text-gray-500 mb-2">Match score is not 3-3 yet.</p>
-                            <p class="text-sm text-gray-400">Tie-break controls will be available when the match reaches 3-3.</p>
-                        </div>
-                    </div>
-                @endif
-            </div>
+            
         </div>
     </div>
 
@@ -404,8 +306,7 @@
                     url: '{{ route("wasit.update-serving", $game->id) }}',
                     method: 'POST',
                     data: {
-                        who_is_serving: team,
-                        _token: '{{ csrf_token() }}'
+                        who_is_serving: team
                     },
                     success: function(response) {
                         if (response.success) {
@@ -516,8 +417,7 @@
                     url: '{{ route("wasit.update-score", $game->id) }}',
                     method: 'POST',
                     data: {
-                        ...scoreData,
-                        _token: '{{ csrf_token() }}'
+                        ...scoreData
                     },
                     success: function(response) {
                         if (response.success) {

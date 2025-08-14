@@ -28,7 +28,7 @@ Route::get('/group-view', function () {
     $group = \App\Models\Group::where('name', $groupName)->with('teams')->first();
     
     if (!$group || $group->teams->isEmpty()) {
-        return view('group-view', [
+        return view('matrix', [
             'group' => null,
             'teams' => collect(),
             'scores' => [],
@@ -167,7 +167,7 @@ Route::get('/group-view', function () {
     ]);
 })->name('group.view');
 
-Route::get('/team-view', function () {
+Route::get('/group-score', function () {
     // Get first 6 groups with teams for 3x2 grid display
     $groups = \App\Models\Group::with('teams')->limit(6)->get();
     
@@ -246,6 +246,7 @@ Route::get('/field-view', function () {
 Route::get('/wasit', [WasitController::class, 'index'])->name('wasit');
 Route::get('/wasit/matches', [WasitController::class, 'getMatches'])->name('wasit.matches');
 Route::post('/wasit/create-match', [WasitController::class, 'createMatch'])->name('wasit.create-match');
+Route::delete('/wasit/delete-match/{game}', [WasitController::class, 'deleteMatch'])->name('wasit.delete-match');
 Route::get('/wasit/referee/{game}', [WasitController::class, 'referee'])->name('wasit.referee');
 Route::post('/wasit/referee/{game}/update-serving', [WasitController::class, 'updateServing'])->name('wasit.update-serving');
 Route::post('/wasit/referee/{game}/update-score', [WasitController::class, 'updateScore'])->name('wasit.update-score');
