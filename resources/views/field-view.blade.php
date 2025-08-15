@@ -210,7 +210,7 @@
                                     @if($latestGame)
                                         {{ $latestGame->team1_score }} 
                                     @else
-                                        No Team
+                                        0
                                     @endif
                                 </span>
                             </div>
@@ -245,7 +245,7 @@
                                     @if($latestGame)
                                         {{ $latestGame->team2_score }} 
                                     @else
-                                        No Team
+                                        0
                                     @endif
                                 </span>
                             </div>
