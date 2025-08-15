@@ -106,9 +106,12 @@ Route::get('matrix-view', function () {
                     } else {
                         $scores[$index][$innerIndex] = $totalWins;
                     }
-                }elseif ($totalWins == 3 && $opponentWins == 4) {
-                    exit;
-                    $activeGame = \App\Models\Game::where(function($query) use ($team, $innerTeam) {
+                } elseif ($totalWins == 4 && $opponentWins == 3) {
+                    // 4-3 situation - display as just "4" (the winning score)
+                    $scores[$index][$innerIndex] = 4;
+                } elseif ($totalWins == 3 && $opponentWins == 4) {
+                    // 3-4 situation - display as "3/xx" where xx is the final tie-break score
+                    $latestTieBreakGame = \App\Models\Game::where(function($query) use ($team, $innerTeam) {
                             $query->where(function($subQuery) use ($team, $innerTeam) {
                                 $subQuery->where('team1_id', $team->id)
                                          ->where('team2_id', $innerTeam->id);
@@ -119,20 +122,23 @@ Route::get('matrix-view', function () {
                             });
                         })
                         ->where('name', 'qualification')
-                        ->where('status', '!=', 'Completed')
+                        ->where('status', 'Completed')
+                        ->where('winner_id', $innerTeam->id)
+                        ->orderBy('created_at', 'desc')
                         ->first();
                     
-                    if ($activeGame) {
-                        // Get current tie-break score
-                        $teamScore = ($activeGame->team1_id == $team->id) 
-                            ? $activeGame->team1_score 
-                            : $activeGame->team2_score;
+                    if ($latestTieBreakGame) {
+                        // Get the tie-break score from when this team lost
+                        $teamTieBreakScore = ($latestTieBreakGame->team1_id == $team->id) 
+                            ? $latestTieBreakGame->team1_score 
+                            : $latestTieBreakGame->team2_score;
                         
-                        $scores[$index][$innerIndex] = '3/' . $teamScore;
+                        $scores[$index][$innerIndex] = "3/{$teamTieBreakScore}";
                     } else {
                         $scores[$index][$innerIndex] = $totalWins;
                     }
                 } else {
+                    // For all other scores, just display the regular win count
                     $scores[$index][$innerIndex] = $totalWins;
                 }
             }
@@ -153,10 +159,22 @@ Route::get('matrix-view', function () {
             $scoreB = $scores[$j][$i];
             
             // Convert tie-break format to numeric value for comparison
-            $numericA = is_numeric($scoreA) ? (int)$scoreA : 
-                       (strpos($scoreA, '/') !== false ? (int)explode('/', $scoreA)[0] : 0);
-            $numericB = is_numeric($scoreB) ? (int)$scoreB : 
-                       (strpos($scoreB, '/') !== false ? (int)explode('/', $scoreB)[0] : 0);
+            $numericA = 0;
+            $numericB = 0;
+            
+            // Handle score formats
+            if (is_numeric($scoreA)) {
+                $numericA = (int)$scoreA;
+            } elseif (strpos($scoreA, '/') !== false) {
+                $numericA = (int)explode('/', $scoreA)[0];
+            }
+            
+            // Handle score formats for scoreB
+            if (is_numeric($scoreB)) {
+                $numericB = (int)$scoreB;
+            } elseif (strpos($scoreB, '/') !== false) {
+                $numericB = (int)explode('/', $scoreB)[0];
+            }
             
             // For tie-break situations, don't count as win/loss since game is still ongoing
             if (strpos($scoreA, '/') !== false && strpos($scoreB, '/') !== false) {
