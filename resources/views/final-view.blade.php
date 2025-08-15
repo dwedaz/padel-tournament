@@ -104,7 +104,7 @@
                                <div class="team1-name absolute  " style="text-align:center; left: 150px; top: 50px; width:400px;">
                                 <span class="text-white" style="font-size: 32px"> Final </span>
                             </div>
-                            <div class="team1-name absolute " style="left: 45px; top: 200px; background-color: red;">
+                            <div class="team1-name absolute " style="left: 45px; top: 210px; background-color: red;">
                                 <span class="name text-white" >{{ $game->team1->name }}</span>
                             </div>
                             <div class="team2-name absolute bg-red-300" style="left: 45px; top: 265px;">
