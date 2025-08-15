@@ -106,6 +106,32 @@ Route::get('matrix-view', function () {
                     } else {
                         $scores[$index][$innerIndex] = $totalWins;
                     }
+                }elseif ($totalWins == 3 && $opponentWins == 4) {
+                    exit;
+                    $activeGame = \App\Models\Game::where(function($query) use ($team, $innerTeam) {
+                            $query->where(function($subQuery) use ($team, $innerTeam) {
+                                $subQuery->where('team1_id', $team->id)
+                                         ->where('team2_id', $innerTeam->id);
+                            })
+                            ->orWhere(function($subQuery) use ($team, $innerTeam) {
+                                $subQuery->where('team1_id', $innerTeam->id)
+                                         ->where('team2_id', $team->id);
+                            });
+                        })
+                        ->where('name', 'qualification')
+                        ->where('status', '!=', 'Completed')
+                        ->first();
+                    
+                    if ($activeGame) {
+                        // Get current tie-break score
+                        $teamScore = ($activeGame->team1_id == $team->id) 
+                            ? $activeGame->team1_score 
+                            : $activeGame->team2_score;
+                        
+                        $scores[$index][$innerIndex] = '3/' . $teamScore;
+                    } else {
+                        $scores[$index][$innerIndex] = $totalWins;
+                    }
                 } else {
                     $scores[$index][$innerIndex] = $totalWins;
                 }
@@ -427,7 +453,7 @@ Route::get('quarterfinal-view', function () {
   
     // Filter teams to only those that have played in the qualification stage
     $games = \App\Models\Game::where('name', 'quarterfinal')->take(4)
-        ->orderBy('created_at', 'asc')
+        ->orderBy('created_at', 'desc')
          ->groupBy('team1_id', 'team2_id')
         ->get();
 
@@ -438,7 +464,7 @@ Route::get('quarterfinal-view', function () {
 Route::get('semifinal-view', function () {
     // Get all semifinal games
     $games = \App\Models\Game::where('name', 'semifinal')->take(2)
-        ->orderBy('created_at', 'asc')
+        ->orderBy('created_at', 'desc')
          ->groupBy('team1_id', 'team2_id')
         ->get();
 
@@ -448,7 +474,7 @@ Route::get('semifinal-view', function () {
 Route::get('final-view', function () {
     // Get all final games
     $games = \App\Models\Game::where('name', 'final')->take(1)
-        ->orderBy('created_at', 'asc')
+        ->orderBy('created_at', 'desc')
         ->groupBy('team1_id', 'team2_id')
         ->get();
 
