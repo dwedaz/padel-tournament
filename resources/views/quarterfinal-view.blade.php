@@ -49,7 +49,6 @@
       }
       .name{
       position: absolute;
-      background-color: red;
       width: 430px; 
       height: 55px;
       display: flex; flex-direction: column; justify-content: center; align-items: left; 
