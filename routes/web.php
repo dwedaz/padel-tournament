@@ -467,34 +467,52 @@ foreach ($teams as $index => $team) {
 })->name('getscore');
 
 Route::get('quarterfinal-view', function () {
-    // Get all teams that have played at least one game
-  
-    // Filter teams to only those that have played in the qualification stage
-    $games = \App\Models\Game::where('name', 'quarterfinal')->take(4)
+    // Get quarterfinal games with distinct team pairs (regardless of team1/team2 order)
+    $games = \App\Models\Game::where('name', 'quarterfinal')
         ->orderBy('created_at', 'desc')
-         ->groupBy('team1_id', 'team2_id')
-        ->get();
+        ->get()
+        ->unique(function ($game) {
+            // Create a unique key using sorted team IDs to ensure distinctness
+            $teamIds = [$game->team1_id, $game->team2_id];
+            sort($teamIds);
+            return implode('-', $teamIds);
+        })
+        ->take(4)
+        ->values(); // Re-index the collection
 
-     
     return view('quarterfinal-view', compact('games'));
 })->name('quarterfinal_view');
 
 Route::get('semifinal-view', function () {
-    // Get all semifinal games
-    $games = \App\Models\Game::where('name', 'semifinal')->take(2)
+    // Get semifinal games with distinct team pairs (regardless of team1/team2 order)
+    $games = \App\Models\Game::where('name', 'semifinal')
         ->orderBy('created_at', 'desc')
-         ->groupBy('team1_id', 'team2_id')
-        ->get();
+        ->get()
+        ->unique(function ($game) {
+            // Create a unique key using sorted team IDs to ensure distinctness
+            $teamIds = [$game->team1_id, $game->team2_id];
+            sort($teamIds);
+            return implode('-', $teamIds);
+        })
+        ->take(2)
+        ->values(); // Re-index the collection
 
     return view('semifinal-view', compact('games'));
 })->name('semifinal_view');
 
 Route::get('final-view', function () {
-    // Get all final games
-    $games = \App\Models\Game::where('name', 'final')->take(1)
+    // Get final games with distinct team pairs (regardless of team1/team2 order)
+    $games = \App\Models\Game::where('name', 'final')
         ->orderBy('created_at', 'desc')
-        ->groupBy('team1_id', 'team2_id')
-        ->get();
+        ->get()
+        ->unique(function ($game) {
+            // Create a unique key using sorted team IDs to ensure distinctness
+            $teamIds = [$game->team1_id, $game->team2_id];
+            sort($teamIds);
+            return implode('-', $teamIds);
+        })
+        ->take(1)
+        ->values(); // Re-index the collection
 
     return view('final-view', compact('games'));
 })->name('final_view');
