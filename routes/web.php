@@ -234,35 +234,69 @@ Route::get('/group-view', function () {
                 ->where('winner_id', $team->id)
                 ->count();
             
-            $team->qualification_wins = $team1Wins + $team2Wins;
+            // Map team properties to match group-view matrix columns
+            // .team-win should match {{-- Win column --}} from group-view
+            // .team-lose should match {{-- Lose column --}} from group-view  
+            // .team-game should match {{-- Total Games column --}} from group-view
             
-            // Also calculate losses
-            $team1Losses = Game::where('team1_id', $team->id)
-                ->where('name', 'qualification')
-                ->where('status', 'Completed')
-                ->where('winner_id', '!=', $team->id)
-                ->whereNotNull('winner_id')
-                ->count();
+            // For now, we need to calculate the matrix data for each team to get the correct values
+            // This will match exactly what group-view shows in its Win/Lose/Total columns
             
-            $team2Losses = Game::where('team2_id', $team->id)
-                ->where('name', 'qualification')
-                ->where('status', 'Completed')
-                ->where('winner_id', '!=', $team->id)
-                ->whereNotNull('winner_id')
-                ->count();
+            // Calculate wins against other teams in this group (matrix Win column)
+            $matrixWins = 0;
+            $matrixLosses = 0; 
+            $matrixTotal = 0;
             
-            $team->qualification_losses = $team1Losses + $team2Losses;
+            foreach ($group->teams as $opponent) {
+                if ($team->id === $opponent->id) continue;
+                
+                // Get this team's score against opponent
+                $teamScore = Game::where(function($query) use ($team, $opponent) {
+                        $query->where(function($subQuery) use ($team, $opponent) {
+                            $subQuery->where('team1_id', $team->id)
+                                     ->where('team2_id', $opponent->id);
+                        })
+                        ->orWhere(function($subQuery) use ($team, $opponent) {
+                            $subQuery->where('team1_id', $opponent->id)
+                                     ->where('team2_id', $team->id);
+                        });
+                    })
+                    ->where('name', 'qualification')
+                    ->where('status', 'Completed')
+                    ->where('winner_id', $team->id)
+                    ->count();
+                
+                // Get opponent's score against this team
+                $opponentScore = Game::where(function($query) use ($team, $opponent) {
+                        $query->where(function($subQuery) use ($team, $opponent) {
+                            $subQuery->where('team1_id', $team->id)
+                                     ->where('team2_id', $opponent->id);
+                        })
+                        ->orWhere(function($subQuery) use ($team, $opponent) {
+                            $subQuery->where('team1_id', $opponent->id)
+                                     ->where('team2_id', $team->id);
+                        });
+                    })
+                    ->where('name', 'qualification')
+                    ->where('status', 'Completed')
+                    ->where('winner_id', $opponent->id)
+                    ->count();
+                
+                // Matrix logic: wins if teamScore > opponentScore, loses if teamScore < opponentScore
+                if ($teamScore > $opponentScore) {
+                    $matrixWins++;
+                } else if ($teamScore < $opponentScore) {
+                    $matrixLosses++;
+                }
+                
+                // Add to total (sum of all wins against all opponents)
+                $matrixTotal += $teamScore;
+            }
             
-            // Calculate total games played
-            $totalGames = Game::where(function($query) use ($team) {
-                    $query->where('team1_id', $team->id)
-                          ->orWhere('team2_id', $team->id);
-                })
-                ->where('name', 'qualification')
-                ->where('status', 'Completed')
-                ->count();
-            
-            $team->qualification_games = $totalGames;
+            // Map to team properties to match group-view columns
+            $team->qualification_wins = $matrixWins;     // Win column from group-view
+            $team->qualification_losses = $matrixLosses; // Lose column from group-view  
+            $team->qualification_games = $matrixTotal;   // Total Games column from group-view
         }
     }
     
