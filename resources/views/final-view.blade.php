@@ -8,9 +8,11 @@
   </head>
   <style>
       body{
+        text-transform: uppercase;
         width: 1920px;
         height: 1080px;
         overflow: hidden;
+        text-transform: uppercase;
       }
 
       #header {
@@ -82,15 +84,17 @@
                             $game = $games[$index];
                             
                             // Count total final games for team1
-                            $team1FinalCount = \App\Models\Game::where('name', 'final')
+                            $team1FinalCount = \App\Models\Game::where('name', 'final')->where('winner_id', $game->team1->id)
+                                ->where('status', 'Completed')
                                 ->where(function ($query) use ($game) {
                                     $query->where('team1_id', $game->team1->id)
                                           ->orWhere('team2_id', $game->team1->id);
-                                })
+                                })->where('winner_id', $game->team1->id)
                                 ->count();
                             
                             // Count total final games for team2
-                            $team2FinalCount = \App\Models\Game::where('name', 'final')
+                            $team2FinalCount = \App\Models\Game::where('name', 'final')->where('winner_id', $game->team2->id)
+                                ->where('status', 'Completed')
                                 ->where(function ($query) use ($game) {
                                     $query->where('team1_id', $game->team2->id)
                                           ->orWhere('team2_id', $game->team2->id);
