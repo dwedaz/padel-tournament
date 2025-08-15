@@ -56,4 +56,32 @@ class Team extends Model
             })
             ->count();
     }
+
+    /**
+     * Get the latest game for this team
+     * 
+     * @param string|null $name Optional game name filter (e.g., 'qualification', 'quarterfinal', 'semifinal', 'final')
+     * @param string|null $status Optional status filter (e.g., 'Completed', 'In Progress')
+     * @return Game|null The most recent game or null if no games found
+     */
+    public function getLatestGame(?string $name = null, ?string $status = null): ?Game
+    {
+        $query = Game::where(function ($query) {
+            $query->where('team1_id', $this->id)
+                  ->orWhere('team2_id', $this->id);
+        })
+        ->with(['team1', 'team2', 'field', 'winnerTeam'])
+        ->orderBy('created_at', 'desc');
+
+        // Apply optional filters
+        if ($name) {
+            $query->where('name', $name);
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        return $query->first();
+    }
 }

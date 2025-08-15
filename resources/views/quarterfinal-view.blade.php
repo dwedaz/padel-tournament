@@ -118,14 +118,14 @@
                                 <span class="name text-white">{{ $game->team2->name }}</span>  
                             </div>
                             <div class="team1-total absolute" style="left: 540px; top: 200px;">
-                                <span class="name-horizontal text-white">{{ $game->team1_score }}</span>
+                                <span class="name-horizontal text-white">{{ $game->team1->getLatestGame('quarterfinal')->team1_score }}</span>
                             </div>
                             <div class="team1-total absolute" style="left: 470px; top: 200px;">
                                 <span class="name-horizontal text-white">{{ $team1FinalCount }}</span>  
                             </div>
 
                             <div class="team2-total absolute" style="left: 540px; top: 265px;">
-                                <span class="name-horizontal text-white">{{ $game->team2_score }}</sp }}</span>  
+                                <span class="name-horizontal text-white">{{ $$game->team2->getLatestGame('quarterfinal')->team2_score }}</sp }}</span>  
                             </div>
                             <div class="team2-total absolute" style="left: 470px; top: 265px;">
                                 <span class="name-horizontal text-white">{{ $team2FinalCount }}</span>  
