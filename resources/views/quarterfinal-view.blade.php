@@ -49,8 +49,8 @@
       }
       .name{
       position: absolute;
-      
-      width: 450px; 
+      background-color: red;
+      width: 430px; 
       height: 55px;
       display: flex; flex-direction: column; justify-content: center; align-items: left; 
       margin-left: 40px;
@@ -106,21 +106,28 @@
                         @endphp
                         
                         <div class="vs relative">
-                            <img src="{{ asset('images/final-seminfinal-quarter.png') }}" >
-                            <div class="team1-name absolute  " style="text-align:center; left: 150px; top: 50px; width:400px;">
-                                <span class="text-white" style="font-size: 32px">Quarter Final {{ $index + 1}}</span>
+                            <img src="{{ asset('images/final-seminfinal-quarter2.png') }}" >
+                               <div class="team1-name absolute  " style="text-align:center; left: 150px; top: 50px; width:400px;">
+                                <span class="text-white" style="font-size: 32px"> Final </span>
                             </div>
-                            <div class="team1-name absolute" style="left: 45px; top: 200px;">
-                                <span class="name text-white">{{ $game->team1->name }}</span>
+                            <div class="team1-name absolute " style="left: 45px; top: 205px; background-color: red;">
+                                <span class="name text-white" >{{ $game->team1->name }}</span>
                             </div>
-                            <div class="team2-name absolute" style="left: 45px; top: 265px;">
+                            <div class="team2-name absolute bg-red-300" style="left: 45px; top: 265px;">
                                 <span class="name text-white">{{ $game->team2->name }}</span>  
                             </div>
                             <div class="team1-total absolute" style="left: 540px; top: 200px;">
-                                <span class="name-horizontal text-white">{{ $team1QuarterfinalCount }}</span>
+                                <span class="name-horizontal text-white">{{ $game->team1_score }}</span>
                             </div>
+                            <div class="team1-total absolute" style="left: 470px; top: 200px;">
+                                <span class="name-horizontal text-white">{{ $team1FinalCount }}</span>  
+                            </div>
+
                             <div class="team2-total absolute" style="left: 540px; top: 265px;">
-                                <span class="name-horizontal text-white">{{ $team2QuarterfinalCount }}</span>  
+                                <span class="name-horizontal text-white">{{ $game->team2_score }}</sp }}</span>  
+                            </div>
+                            <div class="team2-total absolute" style="left: 470px; top: 265px;">
+                                <span class="name-horizontal text-white">{{ $team2FinalCount }}</span>  
                             </div>
                         </div>
                     @else
