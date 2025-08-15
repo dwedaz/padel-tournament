@@ -267,7 +267,7 @@
                             </div>
                             @endif
 
-                            @if ($latestGame->team1_score == 40 && $latestGame->team2_score == 40)
+                            @if ($latestGame && $latestGame->team1_score == 40 && $latestGame->team2_score == 40)
                             <div class="team1-tiebreak absolute " style="text-align:center; top: -20px; height:35px; left: 580px; width:320px; z-index: 2;">
                                 <span class="text-white px-2 py-1 uppercase text-lg font-bold text-blue-900 ">
                                    <img src="images/gp.png" />
