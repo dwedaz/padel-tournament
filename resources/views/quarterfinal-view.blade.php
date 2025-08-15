@@ -109,7 +109,7 @@
                         <div class="vs relative">
                             <img src="{{ asset('images/final-seminfinal-quarter2.png') }}" >
                                <div class="team1-name absolute  " style="text-align:center; left: 150px; top: 50px; width:400px;">
-                                <span class="text-white" style="font-size: 32px">Quarter Final {{ $index }} </span>
+                                <span class="text-white" style="font-size: 32px">Quarter Final {{ $index+1 }} </span>
                             </div>
                             <div class="team1-name absolute " style="left: 45px; top: 205px; background-color: red;">
                                 <span class="name text-white" >{{ $game->team1->name }}</span>
