@@ -88,7 +88,7 @@
                         @php
                             $game = $games[$index];
                             
-                            $team1FinalCount = \App\Models\Game::where('name', 'final')->where('winner_id', $game->team1->id)
+                            $team1FinalCount = \App\Models\Game::where('name', 'quarterfinal')->where('winner_id', $game->team1->id)
                                 ->where('status', 'Completed')
                                 ->where(function ($query) use ($game) {
                                     $query->where('team1_id', $game->team1->id)
@@ -97,7 +97,7 @@
                                 ->count();
                             
                             // Count total final games for team2
-                            $team2FinalCount = \App\Models\Game::where('name', 'final')->where('winner_id', $game->team2->id)
+                            $team2FinalCount = \App\Models\Game::where('name', 'quarterfinal')->where('winner_id', $game->team2->id)
                                 ->where('status', 'Completed')
                                 ->where(function ($query) use ($game) {
                                     $query->where('team1_id', $game->team2->id)
