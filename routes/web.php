@@ -176,15 +176,39 @@ Route::get('matrix-view', function () {
                 $numericB = (int)explode('/', $scoreB)[0];
             }
             
-            // For tie-break situations, don't count as win/loss since game is still ongoing
+            // For tie-break situations, check if one team is winning the tie-break
             if (strpos($scoreA, '/') !== false && strpos($scoreB, '/') !== false) {
-                // Both are in tie-break - game is still active, don't count as win/loss yet
-                // The tie-break game is ongoing, so no win/loss should be recorded
+                // Both are in tie-break, compare tie-break scores
+                $tieScoreA = (int)explode('/', $scoreA)[1];
+                $tieScoreB = (int)explode('/', $scoreB)[1];
+                
+                if ($tieScoreA > $tieScoreB) {
+                    $mWin++;
+                } else if ($tieScoreA < $tieScoreB) {
+                    $mLose++;
+                }
+                // If tie-break scores are equal, no win/lose counted yet
             } else if (strpos($scoreA, '/') !== false || strpos($scoreB, '/') !== false) {
-                // One team is in tie-break, the other isn't - game is still active
-                // Don't count as win/loss since tie-break is ongoing
+                // One team is in tie-break, the other isn't (shouldn't happen, but handle it)
+                // Compare main scores first, then tie-break status
+                if ($numericA > $numericB) {
+                    $mWin++;
+                } else if ($numericA < $numericB) {
+                    $mLose++;
+                } else {
+                    // Same main score, check tie-break progress
+                    if (strpos($scoreA, '/') !== false) {
+                        $tieScoreA = (int)explode('/', $scoreA)[1];
+                        // If opponent has no tie-break, assume they're at 0
+                        if ($tieScoreA > 0) {
+                            $mWin++;
+                        } else {
+                            $mLose++;
+                        }
+                    }
+                }
             } else {
-                // Regular comparison for completed games only
+                // Regular comparison
                 if ($numericA > $numericB) {
                     $mWin++;
                 } else if ($numericA < $numericB) {
@@ -366,7 +390,6 @@ foreach ($teams as $index => $team) {
                     });
                 })
                 ->where('name', 'qualification')
-                ->where('status', 'Completed')
                 ->where('winner_id', $team->id)
                 ->count();
             
