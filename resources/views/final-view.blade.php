@@ -19,7 +19,6 @@
 
       .name-horizontal {
         position: absolute;
-        
         width: 169.457px; 
         height: 63.7541px;
         display: flex; flex-direction: column; justify-content: center; align-items: center; 
@@ -31,84 +30,20 @@
         line-height: 20px;
       }
 
-      .name-vertical {
-        position: absolute;
-  
-        width:  62.9976px; 
-        height: 166.423px;
-        display: flex; flex-direction: column; justify-content: center; align-items: center; 
-        z-index: 2;
-        text-align: center;
-        color: #014E82;
-        font-size: 24px;
-        font-weight: bold;
-        line-height: 20px;
-        text-orientation: mixed;
-        writing-mode: sideways-lr;
-        text-orientation: mixed;
-      }
-
-      .r1{
-        top: 307px;
-      }
-
-      .r2{
-        top: 490px;
-      }
-
-      .r3{
-        top: 572px;
-      }
-
-      .r4{
-        top: 648px;
-      }
-
-      .r5{
-        top: 726px;
-      }
-
-      .r6{
-        top: 808px;
-      }
-
-
-      .c1{
-        left: 542px;
-      }
-
-      .c2{
-        left: 728px;
-      }
-
-      .c3{
-        left: 809px;
-      }
-
-      .c4{
-        left: 888px;
-      }
-
-      .c5{
-        left: 966px;
-      }
-
-      .c6{
-        left: 1043px;
-      }
-
-      .c7{
-        left: 1124px;
-      }
-
-    .c8{
-        left: 1204px;
-      } 
-
-      .c9{
-        left: 1284px;
-      }
-
+    .name{
+      position: absolute;
+      
+      width: 450px; 
+      height: 55px;
+      display: flex; flex-direction: column; justify-content: center; align-items: left; 
+      margin-left: 40px;
+      z-index: 2;
+      text-align: left;
+      color: #014E82;
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 20px;
+    }
       .score{
         position: absolute;
         width: 63px; height: 63px;  display: block; background-image: unset; 
@@ -169,11 +104,11 @@
                                <div class="team1-name absolute  " style="text-align:center; left: 150px; top: 50px; width:400px;">
                                 <span class="text-white" style="font-size: 32px"> Final </span>
                             </div>
-                            <div class="team1-name absolute" style="left: 45px; top: 200px;">
-                                <span class="name-horizontal text-white">{{ $game->team1->name }}</span>
+                            <div class="team1-name absolute " style="left: 45px; top: 200px; background-color: red;">
+                                <span class="name text-white" >{{ $game->team1->name }}</span>
                             </div>
-                            <div class="team2-name absolute" style="left: 45px; top: 265px;">
-                                <span class="name-horizontal text-white">{{ $game->team2->name }}</span>  
+                            <div class="team2-name absolute bg-red-300" style="left: 45px; top: 265px;">
+                                <span class="name text-white">{{ $game->team2->name }}</span>  
                             </div>
                             <div class="team1-total absolute" style="left: 540px; top: 200px;">
                                 <span class="name-horizontal text-white">{{ $team1FinalCount }}</span>
