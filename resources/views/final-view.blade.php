@@ -83,23 +83,45 @@
                         @php
                             $game = $games[$index];
                             
-                            // Count total final games for team1
-                            $team1FinalCount = \App\Models\Game::where('name', 'final')->where('winner_id', $game->team1->id)
+                            // Count final wins for team1
+                            $team1FinalCount = \App\Models\Game::where('name', 'final')
+                                ->where('winner_id', $game->team1->id)
                                 ->where('status', 'Completed')
                                 ->where(function ($query) use ($game) {
                                     $query->where('team1_id', $game->team1->id)
                                           ->orWhere('team2_id', $game->team1->id);
-                                })->where('winner_id', $game->team1->id)
+                                })
                                 ->count();
                             
-                            // Count total final games for team2
-                            $team2FinalCount = \App\Models\Game::where('name', 'final')->where('winner_id', $game->team2->id)
+                            // Count final wins for team2
+                            $team2FinalCount = \App\Models\Game::where('name', 'final')
+                                ->where('winner_id', $game->team2->id)
                                 ->where('status', 'Completed')
                                 ->where(function ($query) use ($game) {
                                     $query->where('team1_id', $game->team2->id)
                                           ->orWhere('team2_id', $game->team2->id);
                                 })
                                 ->count();
+                            
+                            // Get latest final game for each team to display current scores
+                            $team1LatestFinalGame = $game->team1->getLatestGame('final');
+                            $team2LatestFinalGame = $game->team2->getLatestGame('final');
+                            
+                            // Determine team1's current score from their latest final game
+                            $team1CurrentScore = 0;
+                            if ($team1LatestFinalGame) {
+                                $team1CurrentScore = ($team1LatestFinalGame->team1_id == $game->team1->id) 
+                                    ? $team1LatestFinalGame->team1_score 
+                                    : $team1LatestFinalGame->team2_score;
+                            }
+                            
+                            // Determine team2's current score from their latest final game
+                            $team2CurrentScore = 0;
+                            if ($team2LatestFinalGame) {
+                                $team2CurrentScore = ($team2LatestFinalGame->team1_id == $game->team2->id) 
+                                    ? $team2LatestFinalGame->team1_score 
+                                    : $team2LatestFinalGame->team2_score;
+                            }
                         @endphp
                         
                         <div class="vs relative">
@@ -113,15 +135,15 @@
                             <div class="team2-name absolute bg-red-300" style="left: 45px; top: 265px;">
                                 <span class="name text-white">{{ $game->team2->name }}</span>  
                             </div>
-                            <div class="team1-total absolute" style="left: 540px; top: 200px;">
-                                <span class="name-horizontal text-white">{{ $game->team1->getLatestGame('final')team1_score }}</span>
+                            <div class="team1-current-score absolute" style="left: 540px; top: 200px;">
+                                <span class="name-horizontal text-white">{{ $team1CurrentScore }}</span>
                             </div>
                             <div class="team1-total absolute" style="left: 470px; top: 200px;">
                                 <span class="name-horizontal text-white">{{ $team1FinalCount }}</span>  
                             </div>
 
-                            <div class="team2-total absolute" style="left: 540px; top: 265px;">
-                                <span class="name-horizontal text-white">{{ $game->team2->getLatestGame('final')->team2_score }}</span>  
+                            <div class="team2-current-score absolute" style="left: 540px; top: 265px;">
+                                <span class="name-horizontal text-white">{{ $team2CurrentScore }}</span>  
                             </div>
                             <div class="team2-total absolute" style="left: 470px; top: 265px;">
                                 <span class="name-horizontal text-white">{{ $team2FinalCount }}</span>  
